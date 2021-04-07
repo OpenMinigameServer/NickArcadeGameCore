@@ -2,9 +2,7 @@ package io.github.openminigameserver.gamecore.plugin
 
 import io.github.openminigameserver.gamecore.core.arena.manager.io.json.GameCoreModule
 import io.github.openminigameserver.gamecore.core.commands.GameCommandManager
-import io.github.openminigameserver.gamecore.core.game.GameManager
 import io.github.openminigameserver.gamecore.core.players.currentGame
-import io.github.openminigameserver.gamecore.testgame.TestGameDefinition
 import io.github.openminigameserver.nickarcade.core.io.database.helpers.MongoDbConnectionHelper
 import io.github.openminigameserver.nickarcade.core.manager.getArcadeSender
 import io.github.openminigameserver.nickarcade.display.managers.ScoreboardDataProviderManager
@@ -25,7 +23,6 @@ class GameCorePlugin : JavaPlugin() {
         }
         MongoDbConnectionHelper.registerModule(GameCoreModule)
         ScoreboardDataProviderManager.registerProvider(InGameScoreboardDataProvider)
-        GameManager.registerGame(TestGameDefinition())
         GameCommandManager.registerCommands()
     }
 }

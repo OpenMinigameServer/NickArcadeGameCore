@@ -1,6 +1,5 @@
 package io.github.openminigameserver.gamecore.core.game
 
-import io.github.openminigameserver.gamecore.testgame.TestGameDefinition
 import java.util.*
 
 object GameManager {
@@ -13,6 +12,5 @@ object GameManager {
     }
 
     init {
-        registerGame(TestGameDefinition())
     }
 }
