@@ -9,7 +9,10 @@ import io.github.openminigameserver.gamecore.core.game.GameManager
 import java.util.*
 
 class GameParser<C> : ArgumentParser<C, GameDefinition> {
-    override fun parse(commandContext: CommandContext<C>, inputQueue: Queue<String>): ArgumentParseResult<GameDefinition> {
+    override fun parse(
+        commandContext: CommandContext<C>,
+        inputQueue: Queue<String>
+    ): ArgumentParseResult<GameDefinition> {
 
         val input = inputQueue.peek()
             ?: return ArgumentParseResult.failure(

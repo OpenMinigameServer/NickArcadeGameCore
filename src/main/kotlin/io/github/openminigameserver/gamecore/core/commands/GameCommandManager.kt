@@ -4,10 +4,12 @@ import cloud.commandframework.Command
 import cloud.commandframework.arguments.StaticArgument
 import cloud.commandframework.keys.CloudKey
 import cloud.commandframework.kotlin.extension.commandBuilder
+import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
+import io.github.openminigameserver.gamecore.core.commands.impl.ArenasCommands
 import io.github.openminigameserver.gamecore.core.commands.impl.InfoCommands
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
 import io.github.openminigameserver.gamecore.core.game.GameManager
-import io.github.openminigameserver.gamecore.core.game.mode.MiniGameMode
+import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.nickarcade.core.commandAnnotationParser
 import io.github.openminigameserver.nickarcade.core.commandManager
 import io.github.openminigameserver.nickarcade.core.data.sender.ArcadeSender
@@ -17,10 +19,12 @@ import org.checkerframework.checker.nullness.qual.NonNull
 object GameCommandManager {
     fun registerCommands() {
         commandManager.parserRegistry.registerParserSupplier(TypeToken.get(GameDefinition::class.java)) { GameParser() }
-        commandManager.parserRegistry.registerParserSupplier(TypeToken.get(MiniGameMode::class.java)) { GameModeParser() }
+        commandManager.parserRegistry.registerParserSupplier(TypeToken.get(GameModeDefinition::class.java)) { GameModeParser() }
+        commandManager.parserRegistry.registerParserSupplier(TypeToken.get(ArenaDefinition::class.java)) { ArenaDefinitionParser() }
 
         val gameCommands = listOf(
-            commandAnnotationParser.parse(InfoCommands)
+            commandAnnotationParser.parse(InfoCommands),
+            commandAnnotationParser.parse(ArenasCommands),
         )
 
         createGameCommands(gameCommands.flatten())

@@ -1,9 +1,11 @@
 package io.github.openminigameserver.gamecore.core.game.mode
 
+import io.github.openminigameserver.gamecore.core.game.GameDefinition
 import io.github.openminigameserver.gamecore.core.team.GameTeam
 import java.util.*
 
-open class MiniGameMode(val name: String, val friendlyName: String) {
+open class GameModeDefinition(val name: String, val friendlyName: String) {
+    lateinit var game: GameDefinition
     var minimumPlayersToStart = 1
     var maximumPlayers = 2
 
@@ -13,4 +15,10 @@ open class MiniGameMode(val name: String, val friendlyName: String) {
     fun addTeam(team: () -> GameTeam) {
         teams.add(team)
     }
+
+    override fun toString(): String {
+        return "${game.friendlyName} $friendlyName"
+    }
+
+
 }

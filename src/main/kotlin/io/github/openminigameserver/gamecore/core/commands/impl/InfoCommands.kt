@@ -2,7 +2,7 @@ package io.github.openminigameserver.gamecore.core.commands.impl
 
 import cloud.commandframework.annotations.Argument
 import cloud.commandframework.annotations.CommandMethod
-import com.grinderwolf.swm.plugin.SWMPlugin
+import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
 import io.github.openminigameserver.gamecore.core.game.GameInstance
 import io.github.openminigameserver.gamecore.core.game.GameState
@@ -10,12 +10,14 @@ import io.github.openminigameserver.gamecore.core.game.hosting.GameHostingMode
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.AdminHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PartyHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PublicGameHostingInfo
-import io.github.openminigameserver.gamecore.core.game.mode.MiniGameMode
+import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.utils.InfoComponent
+import io.github.openminigameserver.hypixelapi.models.HypixelPackageRank
 import io.github.openminigameserver.nickarcade.core.data.sender.ArcadeSender
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.separator
 import io.github.openminigameserver.nickarcade.party.model.getOrCreateParty
+import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -26,6 +28,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 object InfoCommands {
 
     @CommandMethod("game <game> info")
+    @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameInfo(sender: ArcadeSender, @Argument("game") game: GameDefinition) {
         sender.audience.sendMessage(text {
             it.append(
@@ -39,20 +42,23 @@ object InfoCommands {
     }
 
     @CommandMethod("game <game> debug worldinfo")
+    @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDebugWorldInfo(sender: ArcadePlayer, @Argument("game") game: GameDefinition) {
         val world = sender.player?.world ?: return
-        val slimeWorld = SWMPlugin.getInstance().nms.getSlimeWorld(world)
+        val slimeWorld = world.slimeWorld
         sender.audience.sendMessage(text {
             it.append(text("Name: ", GREEN).append(text(world.name, GOLD))).append(newline())
             it.append(text("Is slime world: ", GREEN).append(text(slimeWorld != null, GOLD))).append(newline())
         })
     }
 
-    @CommandMethod("game <game> debug create <mode> <hostingMode>")
+    @CommandMethod("game <game> debug create <mode> <arena> <hostingMode>")
+    @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDebugMode(
         sender: ArcadePlayer,
         @Argument("game") game: GameDefinition,
-        @Argument("mode") mode: MiniGameMode,
+        @Argument("mode") mode: GameModeDefinition,
+        @Argument("arena") arena: ArenaDefinition,
         @Argument("hostingMode") gameHostingMode: GameHostingMode,
     ) {
 
@@ -62,13 +68,14 @@ object InfoCommands {
             GameHostingMode.PRIVATE_ADMIN -> AdminHostingInfo(sender)
         }
 
-        GameInstance(game, mode, info).also {
+        GameInstance(game, mode, arena, info).also {
             it.addPlayer(sender)
         }
 
     }
 
     @CommandMethod("game <game> debug info")
+    @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameShowDebugInfo(
         sender: ArcadePlayer,
         @Argument("game") game: GameDefinition,
@@ -90,8 +97,8 @@ object InfoCommands {
     }
 
 
-
     @CommandMethod("game <game> setState <state>")
+    @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameSetState(
         sender: ArcadePlayer,
         @Argument("game") game: GameDefinition,

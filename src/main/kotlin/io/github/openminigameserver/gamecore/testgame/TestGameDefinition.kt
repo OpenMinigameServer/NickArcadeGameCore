@@ -4,6 +4,6 @@ import io.github.openminigameserver.gamecore.core.game.GameDefinition
 
 class TestGameDefinition : GameDefinition("Test", "TEST") {
     init {
-        registerGameMode(SoloTestMode())
+        registerGameMode(SoloTestModeDefinition())
     }
 }

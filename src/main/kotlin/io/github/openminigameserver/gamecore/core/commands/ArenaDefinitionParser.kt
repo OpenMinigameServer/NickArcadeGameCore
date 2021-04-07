@@ -4,26 +4,27 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult
 import cloud.commandframework.arguments.parser.ArgumentParser
 import cloud.commandframework.context.CommandContext
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException
-import io.github.openminigameserver.gamecore.core.game.GameDefinition
+import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
+import io.github.openminigameserver.gamecore.core.arena.manager.ArenaManager
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class GameModeParser<C> : ArgumentParser<C, GameModeDefinition> {
-    var game: GameDefinition? = null
+class ArenaDefinitionParser<C> : ArgumentParser<C, ArenaDefinition> {
 
     override fun parse(
         commandContext: CommandContext<C>,
         inputQueue: Queue<String>
-    ): ArgumentParseResult<GameModeDefinition> {
+    ): ArgumentParseResult<ArenaDefinition> {
         val input = inputQueue.peek()
             ?: return ArgumentParseResult.failure(NoInputProvidedException(GameModeParser::class.java, commandContext))
 
-        val game = this.game ?: commandContext.asMap().values.firstOrNull { it is GameDefinition } as? GameDefinition
-        if (game != null) {
-            val entry = game.gameModes[input.toUpperCase()]
-            if (entry != null) {
+        val mode = commandContext.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition
+        if (mode != null) {
+            val result = runBlocking { ArenaManager.findArenaForGameModeDefinitionByName(mode, input) }
+            if (result != null) {
                 inputQueue.poll()
-                return ArgumentParseResult.success(entry)
+                return ArgumentParseResult.success(result)
             }
         }
         return ArgumentParseResult.failure(Exception(input))
@@ -34,11 +35,12 @@ class GameModeParser<C> : ArgumentParser<C, GameModeDefinition> {
     }
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): List<String> {
-
-        val game = this.game ?: commandContext.asMap().values.firstOrNull { it is GameDefinition } as? GameDefinition
-        if (game != null) {
-            return game.gameModes.keys.map { it.toLowerCase() }
+        val mode = commandContext.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition
+        if (mode != null) {
+            return runBlocking { ArenaManager.getArenaNamesForGameModeDefinition(mode) }
         }
+
         return super.suggestions(commandContext, input)
     }
+
 }
