@@ -34,10 +34,10 @@ data class GameInstance(
     @JsonProperty("_id") val id: UUID = UUID.randomUUID()
 ) {
     val audience = GameAudience(this)
-    val spectatorTeam = SpectatorTeam()
-    val lobbyTeam = LobbyTeam()
+    val spectatorTeam = SpectatorTeam().also { it.game = this }
+    val lobbyTeam = LobbyTeam().also { it.game = this }
 
-    val teams = mode.modeTeams.map { it() } + spectatorTeam + lobbyTeam
+    val teams = mode.modeTeams.map { it().also { it.game = this } } + spectatorTeam + lobbyTeam
 
     init {
         PlayerGameManager.registerGame(this)
