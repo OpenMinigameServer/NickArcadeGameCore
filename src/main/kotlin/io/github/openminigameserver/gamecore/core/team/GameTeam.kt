@@ -5,7 +5,7 @@ import org.bukkit.Material
 import org.bukkit.scoreboard.Team
 import java.util.*
 
-abstract class GameTeam(var name: String, var selectorMaterial: Material) {
+abstract class GameTeam(var name: String, var selectorMaterial: Material, var maxPlayers: Int) {
     private val playerSet: MutableSet<ArcadePlayer> = mutableSetOf()
     val players: Set<ArcadePlayer> = Collections.unmodifiableSet(playerSet)
 

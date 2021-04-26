@@ -7,6 +7,6 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 
 class SpectatorTeam : ColoredGameModeTeam(
-    "Spectator", GameMode.SPECTATOR, Material.COMPASS, NamedTextColor.GOLD,
+    "Spectator", GameMode.SPECTATOR, Material.COMPASS, Int.MAX_VALUE, NamedTextColor.GOLD,
     Component.text("SPEC", NamedTextColor.GOLD, TextDecoration.BOLD)
 )

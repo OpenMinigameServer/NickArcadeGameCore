@@ -1,5 +1,6 @@
 package io.github.openminigameserver.gamecore.core.game
 
+import io.github.openminigameserver.gamecore.core.commands.GameCommandManager
 import java.util.*
 
 object GameManager {
@@ -9,6 +10,7 @@ object GameManager {
 
     fun registerGame(game: GameDefinition) {
         registeredGamesMap[game.name] = (game)
+        GameCommandManager.registerCommands()
     }
 
     init {

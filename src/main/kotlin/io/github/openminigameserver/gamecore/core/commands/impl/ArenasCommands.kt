@@ -84,7 +84,7 @@ object ArenasCommands {
     ) = command(sender) {
         ArenaManager.removeArena(arena)
         sender.audience.sendMessage(
-            text("Removed arena $arena from $mode")
+            text("Removed arena $arena from $mode", GREEN)
         )
     }
 

@@ -6,13 +6,13 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.scoreboard.Team
 
-abstract class ColoredGameModeTeam(
+open class ColoredGameModeTeam(
     name: String,
     gameMode: GameMode,
     selectorMaterial: Material,
-    var color: NamedTextColor,
-    var prefix: Component? = null, var suffix: Component? = null
-) : GameModeTeam(name, gameMode, selectorMaterial) {
+    maxPlayers: Int,
+    var color: NamedTextColor, var prefix: Component? = null, var suffix: Component? = null
+) : GameModeTeam(name, gameMode, selectorMaterial, maxPlayers) {
 
     override fun configureScoreboardTeam(team: Team) {
         super.configureScoreboardTeam(team)
