@@ -17,6 +17,7 @@ import io.github.openminigameserver.nickarcade.core.data.sender.ArcadeSender
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.separator
 import io.github.openminigameserver.nickarcade.party.model.getOrCreateParty
+import io.github.openminigameserver.nickarcade.plugin.extensions.command
 import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
@@ -60,7 +61,7 @@ object InfoCommands {
         @Argument("mode") mode: GameModeDefinition,
         @Argument("arena") arena: ArenaDefinition,
         @Argument("hostingMode") gameHostingMode: GameHostingMode,
-    ) {
+    ) = command(sender) {
 
         val info = when (gameHostingMode) {
             GameHostingMode.PUBLIC -> PublicGameHostingInfo
@@ -69,9 +70,9 @@ object InfoCommands {
         }
 
         GameInstance(game, mode, arena, info).also {
+            it.loadArena()
             it.addPlayer(sender)
         }
-
     }
 
     @CommandMethod("game <game> debug info")

@@ -25,8 +25,8 @@ open class GameModeDefinition(val name: String, val friendlyName: String) : Game
         teams.add(team)
     }
 
-    protected inline fun <reified T : GameTeam> team(code: () -> T): () -> T {
-        return code.also { addTeam(it) }
+    protected inline fun <reified T : GameTeam> team(noinline code: () -> T) {
+        return addTeam(code)
     }
 
     override fun toString(): String {
