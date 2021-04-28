@@ -112,4 +112,13 @@ object InfoCommands {
             }
         )
     }
+
+    @CommandMethod("game <game> dispose")
+    @RequiredRank(HypixelPackageRank.ADMIN)
+    fun gameDispose(
+        sender: ArcadePlayer,
+        @Argument("game") game: GameDefinition
+    ) = gameCommand(sender, game) { currentGame ->
+        currentGame.close()
+    }
 }

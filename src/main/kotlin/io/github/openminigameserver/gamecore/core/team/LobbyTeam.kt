@@ -1,6 +1,7 @@
 package io.github.openminigameserver.gamecore.core.team
 
 import io.github.openminigameserver.gamecore.core.game.GameManager.teamSelectorAction
+import io.github.openminigameserver.gamecore.core.team.selector.TeamSelectorUI
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.misc.RightClickSuffixComponent
 import io.github.openminigameserver.nickarcade.core.ui.disableItalic
@@ -34,5 +35,17 @@ class LobbyTeam : GameModeTeam("Lobby", GameMode.ADVENTURE, Material.AIR, Int.MA
                 })
             }
         }
+    }
+
+    private val teamSelectorUI by lazy { TeamSelectorUI(game, this) }
+    fun openTeamSelectorMenu(player: ArcadePlayer) {
+        player.player?.let { p ->
+            teamSelectorUI.show(p)
+        }
+    }
+
+    override fun onPlayerRemove(p: ArcadePlayer) {
+        super.onPlayerRemove(p)
+        p.player?.inventory?.clear()
     }
 }
