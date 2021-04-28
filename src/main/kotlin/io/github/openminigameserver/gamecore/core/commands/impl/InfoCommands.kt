@@ -22,38 +22,11 @@ import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRa
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
-
 
 object InfoCommands {
 
-    @CommandMethod("game <game> info")
-    @RequiredRank(HypixelPackageRank.ADMIN)
-    fun gameInfo(sender: ArcadeSender, @Argument("game") game: GameDefinition) {
-        sender.audience.sendMessage(text {
-            it.append(
-                text(
-                    "Game Name: ",
-                    GREEN
-                ).append(text(game.friendlyName))
-            ).append(Component.newline())
-            it.append(text("Internal name: ", GREEN).append(text(game.name)))
-        })
-    }
-
-    @CommandMethod("game <game> debug worldinfo")
-    @RequiredRank(HypixelPackageRank.ADMIN)
-    fun gameDebugWorldInfo(sender: ArcadePlayer, @Argument("game") game: GameDefinition) {
-        val world = sender.player?.world ?: return
-        val slimeWorld = world.slimeWorld
-        sender.audience.sendMessage(text {
-            it.append(text("Name: ", GREEN).append(text(world.name, GOLD))).append(newline())
-            it.append(text("Is slime world: ", GREEN).append(text(slimeWorld != null, GOLD))).append(newline())
-        })
-    }
-
-    @CommandMethod("game <game> debug create <mode> <arena> <hostingMode>")
+    @CommandMethod("game <game> admin create <mode> <arena> <hostingMode>")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDebugMode(
         sender: ArcadePlayer,
@@ -75,7 +48,7 @@ object InfoCommands {
         }
     }
 
-    @CommandMethod("game <game> debug info")
+    @CommandMethod("game <game> admin info")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameShowDebugInfo(
         sender: ArcadePlayer,
@@ -98,7 +71,7 @@ object InfoCommands {
     }
 
 
-    @CommandMethod("game <game> setState <state>")
+    @CommandMethod("game <game> admin state <state>")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameSetState(
         sender: ArcadePlayer,
@@ -113,7 +86,7 @@ object InfoCommands {
         )
     }
 
-    @CommandMethod("game <game> dispose")
+    @CommandMethod("game <game> admin dispose")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDispose(
         sender: ArcadePlayer,

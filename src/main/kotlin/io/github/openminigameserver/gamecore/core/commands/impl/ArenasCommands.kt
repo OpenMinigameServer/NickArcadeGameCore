@@ -19,7 +19,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 
 object ArenasCommands {
-    private const val arenasCommandPrefix = "game <game> arenas"
+    private const val arenasCommandPrefix = "game <game> admin arenas"
 
     @CommandMethod("$arenasCommandPrefix create <mode> <name>")
     @RequiredRank(HypixelPackageRank.ADMIN)
