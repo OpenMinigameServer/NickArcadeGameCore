@@ -39,7 +39,9 @@ object ArenasCommands {
         }
 
         val playerLocation = sender.player?.location?.let { ArenaLocation(it) } ?: return@command
-        ArenaManager.saveArena(ArenaDefinition(mode, name, slimeWorld.name, playerLocation))
+        ArenaManager.saveArena(ArenaDefinition(mode, name, slimeWorld.name).apply {
+            spawnLocation = playerLocation
+        })
         sender.audience.sendMessage(text("Arena named $name was created for $mode.", GREEN))
     }
 

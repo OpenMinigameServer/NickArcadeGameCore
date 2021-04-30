@@ -2,14 +2,14 @@ package io.github.openminigameserver.gamecore.core.game.mode
 
 import io.github.openminigameserver.gamecore.core.arena.ArenaLocation
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
-import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyContainer
+import io.github.openminigameserver.gamecore.core.game.properties.GameDefinitionPropertyContainer
 import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
 import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyType
-import io.github.openminigameserver.gamecore.core.game.properties.prop
+import io.github.openminigameserver.gamecore.core.game.properties.requiredProp
 import io.github.openminigameserver.gamecore.core.team.GameTeam
 import java.util.*
 
-open class GameModeDefinition(val name: String, val friendlyName: String) : GamePropertyContainer {
+open class GameModeDefinition(val name: String, val friendlyName: String) : GameDefinitionPropertyContainer {
     lateinit var game: GameDefinition
     var minimumPlayersToStart = 2
     var maximumPlayers = 2
@@ -19,7 +19,7 @@ open class GameModeDefinition(val name: String, val friendlyName: String) : Game
     private val teams = mutableSetOf<() -> GameTeam>()
     val modeTeams: Set<() -> GameTeam> = Collections.unmodifiableSet(teams)
 
-    val spawnLocation = prop<ArenaLocation>("spawnLocation", GamePropertyType.ARENA)
+    val spawnLocation = requiredProp<ArenaLocation>("spawnLocation", GamePropertyType.ARENA)
 
     fun addTeam(team: () -> GameTeam) {
         teams.add(team)

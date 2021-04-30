@@ -100,7 +100,7 @@ data class GameInstance(
     override fun close() {
         PlayerGameManager.unregisterGame(this)
         teams.forEach {
-            it.players.forEach { p ->
+            it.players.asSequence().forEach { p ->
                 p.player?.teleport(Bukkit.getWorlds().first().spawnLocation)
                 it.removePlayer(p)
                 p.currentGame = null

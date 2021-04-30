@@ -13,13 +13,12 @@ import io.github.openminigameserver.gamecore.core.game.hosting.impl.PublicGameHo
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.utils.InfoComponent
 import io.github.openminigameserver.hypixelapi.models.HypixelPackageRank
-import io.github.openminigameserver.nickarcade.core.data.sender.ArcadeSender
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.separator
+import io.github.openminigameserver.nickarcade.party.model.getCurrentParty
 import io.github.openminigameserver.nickarcade.party.model.getOrCreateParty
 import io.github.openminigameserver.nickarcade.plugin.extensions.command
 import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -42,9 +41,19 @@ object InfoCommands {
             GameHostingMode.PRIVATE_ADMIN -> AdminHostingInfo(sender)
         }
 
-        GameInstance(game, mode, arena, info).also {
-            it.loadArena()
-            it.addPlayer(sender)
+        val party = sender.getCurrentParty(false)
+        val canJoin = party == null || party.isLeader(sender)
+        if (canJoin) {
+            GameInstance(game, mode, arena, info).also { game ->
+                game.loadArena()
+                if (party != null) {
+                    party.membersList.forEach {
+                        game.addPlayer(it.player)
+                    }
+                } else {
+                    game.addPlayer(sender)
+                }
+            }
         }
     }
 
