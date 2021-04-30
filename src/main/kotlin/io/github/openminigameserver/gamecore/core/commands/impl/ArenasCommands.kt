@@ -15,8 +15,7 @@ import io.github.openminigameserver.nickarcade.plugin.extensions.command
 import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
-import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.*
 
 object ArenasCommands {
     private const val arenasCommandPrefix = "game <game> admin arenas"
@@ -69,10 +68,19 @@ object ArenasCommands {
         @Argument("arena") arena: ArenaDefinition
     ) = command(sender) {
         sender.audience.sendMessage(
-            text {
-                it.append(InfoComponent("Name", arena.name)).append(newline())
-                it.append(InfoComponent("Id", arena.id)).append(newline())
-                it.append(InfoComponent("World File Name", arena.worldFileName))
+            text { b ->
+                val check = arena.checkValidity()
+                b.append(InfoComponent("Name", arena.name)).append(newline())
+                b.append(InfoComponent("Id", arena.id)).append(newline())
+                b.append(InfoComponent("World File Name", arena.worldFileName)).append(newline())
+                b.append(InfoComponent("Is Valid", check.valid))
+                if (check.missingProperties.isNotEmpty()) {
+                    b.append(newline())
+                    b.append(text("Missing Properties:", RED))
+                    check.missingProperties.forEach { prop ->
+                        b.append(text(prop.friendlyName, YELLOW))
+                    }
+                }
             }
         )
     }

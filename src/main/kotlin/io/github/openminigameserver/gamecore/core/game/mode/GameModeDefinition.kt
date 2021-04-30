@@ -19,7 +19,7 @@ open class GameModeDefinition(val name: String, val friendlyName: String) : Game
     private val teams = mutableSetOf<() -> GameTeam>()
     val modeTeams: Set<() -> GameTeam> = Collections.unmodifiableSet(teams)
 
-    val spawnLocation = requiredProp<ArenaLocation>("spawnLocation", GamePropertyType.ARENA)
+    val spawnLocation = requiredProp<ArenaLocation>("spawnLocation", "Spawn Location", GamePropertyType.ARENA)
 
     fun addTeam(team: () -> GameTeam) {
         teams.add(team)

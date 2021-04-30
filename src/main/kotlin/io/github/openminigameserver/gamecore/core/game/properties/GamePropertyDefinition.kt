@@ -5,6 +5,7 @@ import kotlin.reflect.KProperty
 
 open class GamePropertyDefinition<T>(
     val name: String,
+    val friendlyName: String,
     val type: GamePropertyType,
     val javaType: Class<T>
 )

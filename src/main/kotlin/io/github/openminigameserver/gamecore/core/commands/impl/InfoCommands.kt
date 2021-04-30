@@ -68,10 +68,8 @@ object InfoCommands {
         val gameHostingMode = currentGame.hostingInfo.mode
 
         sender.audience.sendMessage(text {
-            it.append(InfoComponent("Internal Name", game.name)).append(newline())
             it.append(InfoComponent("Friendly Name", game.friendlyName)).append(newline())
             it.append(InfoComponent("Selected Mode Name", mode.friendlyName)).append(newline())
-            it.append(InfoComponent("Selected Mode Internal Name", mode.name)).append(newline())
 
             it.append(InfoComponent("Selected Mode Teams", mode.modeTeams.joinToString { it().name })).append(newline())
             it.append(InfoComponent("State", currentGame.state)).append(newline())
