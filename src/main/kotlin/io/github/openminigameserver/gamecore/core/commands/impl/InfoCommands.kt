@@ -5,7 +5,6 @@ import cloud.commandframework.annotations.CommandMethod
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
 import io.github.openminigameserver.gamecore.core.game.GameInstance
-import io.github.openminigameserver.gamecore.core.game.GameState
 import io.github.openminigameserver.gamecore.core.game.hosting.GameHostingMode
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.AdminHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PartyHostingInfo
@@ -14,13 +13,13 @@ import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.utils.InfoComponent
 import io.github.openminigameserver.hypixelapi.models.HypixelPackageRank
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
-import io.github.openminigameserver.nickarcade.core.separator
 import io.github.openminigameserver.nickarcade.party.model.getCurrentParty
 import io.github.openminigameserver.nickarcade.party.model.getOrCreateParty
 import io.github.openminigameserver.nickarcade.plugin.extensions.command
 import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 
 object InfoCommands {
@@ -78,19 +77,16 @@ object InfoCommands {
     }
 
 
-    @CommandMethod("game <game> admin state <state>")
+    @CommandMethod("game <game> admin phase skip")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameSetState(
         sender: ArcadePlayer,
         @Argument("game") game: GameDefinition,
-        @Argument("state") state: GameState
     ) = gameCommand(sender, game) { currentGame ->
-        currentGame.state = state
         sender.audience.sendMessage(
-            separator {
-                append(text("Set game state to $state", GREEN))
-            }
+            text("Skipped current phase ", GREEN).append(text(currentGame.currentPhase.friendlyName, GOLD))
         )
+        currentGame.phasesTimer.skipCurrent = true
     }
 
     @CommandMethod("game <game> admin dispose")

@@ -15,7 +15,6 @@ import io.github.openminigameserver.nickarcade.plugin.extensions.launch
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.*
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.HumanEntity
@@ -24,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 import org.checkerframework.checker.nullness.qual.NonNull
 
 class TeamSelectorUI(val game: GameInstance, val lobbyTeam: LobbyTeam) : ChestGui(1, "Team Selector") {
-    private val selectedTeamPlayers = mutableMapOf<String, MutableList<ArcadePlayer>>()
+    val selectedTeamPlayers = mutableMapOf<String, MutableList<ArcadePlayer>>()
 
     private fun getPlayerListForTeam(team: GameTeam): MutableList<ArcadePlayer> {
         return selectedTeamPlayers.getOrPut(team.name) { mutableListOf() }
@@ -45,22 +44,24 @@ class TeamSelectorUI(val game: GameInstance, val lobbyTeam: LobbyTeam) : ChestGu
             val displayNameComponent =
                 text(
                     "${team.name} Team",
-                    (team as? ColoredGameModeTeam)?.color ?: NamedTextColor.WHITE
+                    (team as? ColoredGameModeTeam)?.color ?: WHITE
                 ).disableItalic()
 
             displayName(displayNameComponent)
 
             val players = getPlayerListForTeam(team)
             lore(getGameTeamItemLore(displayNameComponent, players, team))
-        }) {
-            it.isCancelled = true
+        }) { e ->
+            e.isCancelled = true
             launch {
-                val sender = (it.whoClicked as Player).getArcadeSender()
+                val sender = (e.whoClicked as Player).getArcadeSender()
 
-                selectedTeamPlayers.forEach { teamEntry -> teamEntry.value.removeIf { it == sender } }
-                getPlayerListForTeam(team).add(sender)
+                if (getPlayerListForTeam(team).size < team.maxPlayers) {
+                    selectedTeamPlayers.forEach { teamEntry -> teamEntry.value.removeIf { it == sender } }
+                    getPlayerListForTeam(team).add(sender)
 
-                this@TeamSelectorUI.update()
+                    this@TeamSelectorUI.update()
+                }
             }
         }
 

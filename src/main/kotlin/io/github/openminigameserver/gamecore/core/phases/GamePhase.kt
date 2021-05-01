@@ -5,9 +5,12 @@ import io.github.openminigameserver.gamecore.core.game.GameInstance
 abstract class GamePhase(var name: String, var friendlyName: String) {
     lateinit var game: GameInstance
 
-    abstract fun onStart()
+    abstract suspend fun onStart()
 
-    abstract fun onEnd()
+    abstract suspend fun onEnd()
 
-    abstract fun shouldEnd(): Boolean
+    /**
+     * This method is called on a timer every second.
+     */
+    abstract suspend fun shouldEnd(): Boolean
 }

@@ -10,6 +10,9 @@ import com.grinderwolf.swm.plugin.SWMPlugin
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.game.hosting.GameHostingInfo
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
+import io.github.openminigameserver.gamecore.core.phases.GameEndPhase
+import io.github.openminigameserver.gamecore.core.phases.LobbyPhase
+import io.github.openminigameserver.gamecore.core.phases.PhasesTimer
 import io.github.openminigameserver.gamecore.core.players.PlayerGameManager
 import io.github.openminigameserver.gamecore.core.players.currentGame
 import io.github.openminigameserver.gamecore.core.team.GameTeam
@@ -21,10 +24,12 @@ import io.github.openminigameserver.nickarcade.plugin.extensions.async
 import io.github.openminigameserver.nickarcade.plugin.extensions.launch
 import io.github.openminigameserver.nickarcade.plugin.extensions.sync
 import org.bukkit.Bukkit
+import org.bukkit.GameRule
 import org.bukkit.Location
 import org.bukkit.World
 import java.io.Closeable
 import java.util.*
+import kotlin.collections.ArrayDeque
 
 
 @JsonIdentityInfo(property = "_id", generator = ObjectIdGenerators.PropertyGenerator::class)
@@ -35,18 +40,30 @@ data class GameInstance(
     var hostingInfo: GameHostingInfo,
     var state: GameState = GameState.WAITING_FOR_PLAYERS,
     @JsonProperty("_id") val id: UUID = UUID.randomUUID()
-): Closeable {
+) : Closeable {
     val audience = GameAudience(this)
-    val spectatorTeam = SpectatorTeam()
-    val lobbyTeam = LobbyTeam()
-
+    private val spectatorTeam = SpectatorTeam()
+    internal val lobbyTeam = LobbyTeam()
+    private val lobbyPhase = LobbyPhase()
+    private val gameEndPhase = GameEndPhase()
     val teams =
         (mode.modeTeams.map { it() } + spectatorTeam + lobbyTeam).onEach { it.game = this@GameInstance }
 
+    val playerCount: Int
+        get() = teams.filterNot { it == spectatorTeam }.sumBy { it.players.size }
+
+    val phases =
+        ArrayDeque(listOf(lobbyPhase) + mode.modePhases.map { it() } + gameEndPhase).onEach { it.game = this@GameInstance }
+
+    val currentPhase
+        get() = phases.firstOrNull() ?: gameEndPhase
+
+    internal val phasesTimer = PhasesTimer(this)
+
     init {
         PlayerGameManager.registerGame(this)
+        phasesTimer.launch()
     }
-
 
     lateinit var worldArena: World
     val respawnLocation: Location get() = arena.spawnLocation.toLocation(worldArena)
@@ -64,7 +81,11 @@ data class GameInstance(
         }
         sync { slimeManager.generateWorld(clonedWorld) }
 
-        worldArena = async { Bukkit.getWorld(finalWorldName)!! }
+        worldArena = async { Bukkit.getWorld(finalWorldName)!! }.apply {
+            setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
+            setGameRule(GameRule.DO_MOB_SPAWNING, false)
+            setGameRule(GameRule.DO_WEATHER_CYCLE, false)
+        }
     }
 
     private fun createPropertyMap() = SlimePropertyMap().apply {
@@ -98,6 +119,7 @@ data class GameInstance(
     }
 
     override fun close() {
+        phasesTimer.stop()
         PlayerGameManager.unregisterGame(this)
         teams.forEach {
             it.players.asSequence().forEach { p ->

@@ -10,7 +10,7 @@ import java.util.*
 
 //Game is being hosted by a party and only party members can join
 data class PartyHostingInfo(val partyId: UUID) : GameHostingInfo() {
-    private val party: Party?
+    val party: Party?
         get() = PartyManager.getParty(partyId)
 
     override val mode: GameHostingMode

@@ -20,9 +20,10 @@ data class ArenaDefinition(
     @JsonProperty("_id") val id: UUID = UUID.randomUUID(),
 ) {
     fun checkValidity(): ArenaValidityCheckResult {
-        val missingProperties = gameMode.properties.values.filterIsInstance<RequiredGamePropertyDefinition<*>>().filterNot {
-            properties.containsKey(it.name)
-        }
+        val missingProperties =
+            gameMode.properties.values.filterIsInstance<RequiredGamePropertyDefinition<*>>().filterNot {
+                properties.containsKey(it.name)
+            }
 
         return ArenaValidityCheckResult(missingProperties.isEmpty(), missingProperties)
     }
@@ -30,6 +31,8 @@ data class ArenaDefinition(
     val isValid
         get() = checkValidity().valid
 
+    @get:JsonIgnore
+    @set:JsonIgnore
     var spawnLocation: ArenaLocation by gameMode.spawnLocation
 
     override fun toString(): String {
