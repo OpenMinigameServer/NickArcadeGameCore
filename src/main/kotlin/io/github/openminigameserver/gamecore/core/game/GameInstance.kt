@@ -9,6 +9,7 @@ import com.grinderwolf.swm.api.world.properties.SlimePropertyMap
 import com.grinderwolf.swm.plugin.SWMPlugin
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.game.hosting.GameHostingInfo
+import io.github.openminigameserver.gamecore.core.game.hosting.impl.PartyHostingInfo
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.core.phases.GameEndPhase
 import io.github.openminigameserver.gamecore.core.phases.LobbyPhase
@@ -23,6 +24,9 @@ import io.github.openminigameserver.nickarcade.display.managers.ScoreboardManage
 import io.github.openminigameserver.nickarcade.plugin.extensions.async
 import io.github.openminigameserver.nickarcade.plugin.extensions.launch
 import io.github.openminigameserver.nickarcade.plugin.extensions.sync
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
 import org.bukkit.GameRule
 import org.bukkit.Location
@@ -53,7 +57,9 @@ data class GameInstance(
         get() = teams.filterNot { it == spectatorTeam }.sumBy { it.players.size }
 
     val phases =
-        ArrayDeque(listOf(lobbyPhase) + mode.modePhases.map { it() } + gameEndPhase).onEach { it.game = this@GameInstance }
+        ArrayDeque(listOf(lobbyPhase) + mode.modePhases.map { it() } + gameEndPhase).onEach {
+            it.game = this@GameInstance
+        }
 
     val currentPhase
         get() = phases.firstOrNull() ?: gameEndPhase
@@ -104,6 +110,14 @@ data class GameInstance(
         val canJoin = hostingInfo.canJoin(player)
         if (canJoin) {
             lobbyTeam.addPlayer(player)
+            audience.sendMessage(text {
+                it.append(text(player.getChatName(actualData = false, colourPrefixOnly = true)))
+                it.append(text(" has joined (", YELLOW))
+                it.append(text(playerCount, AQUA))
+                it.append(text("/", YELLOW))
+                it.append(text(mode.maximumPlayers, AQUA))
+                it.append(text(")!", YELLOW))
+            })
         }
         return canJoin
     }
@@ -130,4 +144,6 @@ data class GameInstance(
         }
         Bukkit.unloadWorld(worldArena, false)
     }
+
+    val isDeveloperGame get() = hostingInfo is PartyHostingInfo && (hostingInfo as PartyHostingInfo).party?.isDeveloperGameParty() == true
 }

@@ -5,7 +5,7 @@ import kotlin.time.seconds
 
 abstract class TimedPhase(name: String, friendlyName: String, val duration: Duration) : GamePhase(name, friendlyName) {
     var elapsedTime: Duration = Duration.ZERO
-        private set
+        internal set
     val remainingTime: Duration get() = duration - elapsedTime
 
     protected open fun resetTimer() {

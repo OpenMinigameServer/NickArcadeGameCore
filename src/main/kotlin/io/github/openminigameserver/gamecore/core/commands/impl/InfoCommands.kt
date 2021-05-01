@@ -10,6 +10,7 @@ import io.github.openminigameserver.gamecore.core.game.hosting.impl.AdminHosting
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PartyHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PublicGameHostingInfo
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
+import io.github.openminigameserver.gamecore.core.phases.TimedPhase
 import io.github.openminigameserver.gamecore.utils.InfoComponent
 import io.github.openminigameserver.hypixelapi.models.HypixelPackageRank
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
@@ -19,8 +20,8 @@ import io.github.openminigameserver.nickarcade.plugin.extensions.command
 import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.*
+import kotlin.time.seconds
 
 object InfoCommands {
 
@@ -79,7 +80,7 @@ object InfoCommands {
 
     @CommandMethod("game <game> admin phase skip")
     @RequiredRank(HypixelPackageRank.ADMIN)
-    fun gameSetState(
+    fun gameSkipCurrentPhase(
         sender: ArcadePlayer,
         @Argument("game") game: GameDefinition,
     ) = gameCommand(sender, game) { currentGame ->
@@ -87,6 +88,49 @@ object InfoCommands {
             text("Skipped current phase ", GREEN).append(text(currentGame.currentPhase.friendlyName, GOLD))
         )
         currentGame.phasesTimer.skipCurrent = true
+    }
+
+    @CommandMethod("game <game> admin phase setElapsed <time>")
+    @RequiredRank(HypixelPackageRank.ADMIN)
+    fun gameDurationSetElapsed(
+        sender: ArcadePlayer,
+        @Argument("game") game: GameDefinition,
+        @Argument("time") seconds: Int
+    ) = gameCommand(sender, game) { currentGame ->
+        val currentPhase = currentGame.currentPhase
+        if (currentPhase !is TimedPhase) {
+            sender.audience.sendMessage(
+                text("Unable to set phase elapsed time! The current phase is not time-based.", RED)
+            )
+            return@gameCommand
+        }
+        val finalTime = seconds.seconds
+        sender.audience.sendMessage(
+            text("Successfully current phase's elapsed time to ", GREEN).append(text(finalTime.toString(), GOLD))
+        )
+        currentPhase.elapsedTime = finalTime
+    }
+
+    @CommandMethod("game <game> admin phase setRemaining <time>")
+    @RequiredRank(HypixelPackageRank.ADMIN)
+    fun gameDurationSetRemaining(
+        sender: ArcadePlayer,
+        @Argument("game") game: GameDefinition,
+        @Argument("time") seconds: Int
+    ) = gameCommand(sender, game) { currentGame ->
+        val currentPhase = currentGame.currentPhase
+        if (currentPhase !is TimedPhase) {
+            sender.audience.sendMessage(
+                text("Unable to set phase remaining time! The current phase is not time-based.", RED)
+            )
+            return@gameCommand
+        }
+        val time = seconds.seconds
+        val finalTime = currentPhase.duration - seconds.seconds
+        sender.audience.sendMessage(
+            text("Successfully current phase's remaining time to ", GREEN).append(text(time.toString(), GOLD))
+        )
+        currentPhase.elapsedTime = finalTime
     }
 
     @CommandMethod("game <game> admin dispose")

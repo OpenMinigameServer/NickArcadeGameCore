@@ -9,6 +9,8 @@ abstract class GamePhase(var name: String, var friendlyName: String) {
 
     abstract suspend fun onEnd()
 
+    open suspend fun onTick() {}
+
     /**
      * This method is called on a timer every second.
      */

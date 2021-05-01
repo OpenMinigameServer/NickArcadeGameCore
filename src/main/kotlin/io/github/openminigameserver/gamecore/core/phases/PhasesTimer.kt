@@ -4,7 +4,7 @@ import io.github.openminigameserver.gamecore.core.game.GameInstance
 import io.github.openminigameserver.nickarcade.plugin.extensions.launchAsync
 import io.github.openminigameserver.nickarcade.plugin.extensions.sync
 import kotlinx.coroutines.delay
-import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import kotlin.time.seconds
 
@@ -25,19 +25,35 @@ class PhasesTimer(val game: GameInstance) {
 
                 val currentPhase = game.currentPhase
                 val debugColor = GOLD
-                if (currentPhase is TimedPhase) {
-                    game.audience.sendActionBar(text("[DEBUG] Ending Timed phase ${currentPhase.javaClass.simpleName} in ${(currentPhase.remainingTime)}", debugColor))
+                if (game.isDeveloperGame && currentPhase is TimedPhase) {
+                    game.audience.sendActionBar(
+                        Component.text(
+                            "[DEBUG] Ending Timed phase ${currentPhase.javaClass.simpleName} in ${(currentPhase.remainingTime)}",
+                            debugColor
+                        )
+                    )
                 }
+                sync { game.currentPhase.onTick() }
                 if (skipCurrent || game.currentPhase.shouldEnd()) {
-                    game.audience.sendActionBar(text("[DEBUG] Ending current phase ${currentPhase.javaClass.simpleName}",
-                        debugColor
-                    ))
+                    if (game.isDeveloperGame) {
+                        game.audience.sendActionBar(
+                            Component.text(
+                                "[DEBUG] Ending current phase ${currentPhase.javaClass.simpleName}",
+                                debugColor
+                            )
+                        )
+                    }
                     sync { game.currentPhase.onEnd() }
                     game.phases.removeFirstOrNull()
 
-                    game.audience.sendActionBar(text("[DEBUG] Starting new phase ${currentPhase.javaClass.simpleName}",
-                        debugColor
-                    ))
+                    if (game.isDeveloperGame) {
+                        game.audience.sendActionBar(
+                            Component.text(
+                                "[DEBUG] Starting new phase ${game.currentPhase.javaClass.simpleName}",
+                                debugColor
+                            )
+                        )
+                    }
                     sync { game.currentPhase.onStart() }
                     skipCurrent = false
                 }
