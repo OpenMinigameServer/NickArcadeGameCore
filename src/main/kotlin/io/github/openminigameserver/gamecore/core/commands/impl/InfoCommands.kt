@@ -71,7 +71,7 @@ object InfoCommands {
             it.append(InfoComponent("Friendly Name", game.friendlyName)).append(newline())
             it.append(InfoComponent("Selected Mode Name", mode.friendlyName)).append(newline())
 
-            it.append(InfoComponent("Selected Mode Teams", mode.modeTeams.joinToString { it().name })).append(newline())
+            it.append(InfoComponent("Selected Mode Teams", mode.modeTeams.joinToString { it().friendlyName })).append(newline())
             it.append(InfoComponent("State", currentGame.state)).append(newline())
             it.append(InfoComponent("Hosting Mode", gameHostingMode)).append(newline())
         })

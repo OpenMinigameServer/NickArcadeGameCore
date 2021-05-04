@@ -3,6 +3,7 @@ package io.github.openminigameserver.gamecore.core.team
 import io.github.openminigameserver.gamecore.core.game.GameManager.teamSelectorAction
 import io.github.openminigameserver.gamecore.core.players.currentTeam
 import io.github.openminigameserver.gamecore.core.team.selector.TeamSelectorUI
+import io.github.openminigameserver.gamecore.core.team.selector.TeamSelectorUIBase
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.misc.RightClickSuffixComponent
 import io.github.openminigameserver.nickarcade.core.ui.disableItalic
@@ -13,13 +14,13 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-class LobbyTeam : GameModeTeam("Lobby", GameMode.ADVENTURE, Material.AIR, Int.MAX_VALUE) {
+class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AIR, Int.MAX_VALUE) {
     override fun onPlayerAdd(p: ArcadePlayer) {
         super.onPlayerAdd(p)
         val player = p.player
         if (player != null) {
             player.inventory.clear()
-            if (game.hostingInfo.mode.isPrivate) {
+            if (game.hostingInfo.mode.isPrivate && (!game.isRolePlayGame || game.isHostPartyLeader(p))) {
                 player.inventory.setItem(0, ItemStack(Material.NOTE_BLOCK).apply {
                     itemMeta = itemMeta.apply {
                         displayName(
@@ -28,8 +29,10 @@ class LobbyTeam : GameModeTeam("Lobby", GameMode.ADVENTURE, Material.AIR, Int.MA
                         )
                         lore(
                             listOf(
-                                Component.text("Click to select your team!", GRAY)
-                                    .disableItalic()
+                                Component.text(
+                                    if (game.isRolePlayGame) "Click to select player teams!" else "Click to select your team!",
+                                    GRAY
+                                ).disableItalic()
                             )
                         )
                     }.teamSelectorAction()
@@ -38,7 +41,10 @@ class LobbyTeam : GameModeTeam("Lobby", GameMode.ADVENTURE, Material.AIR, Int.MA
         }
     }
 
-    private val teamSelectorUI by lazy { TeamSelectorUI(game, this) }
+    private val teamSelectorUI: TeamSelectorUIBase by lazy {
+        //TODO: Create Role Selector UI
+        TeamSelectorUI(game, this) }
+
     fun openTeamSelectorMenu(player: ArcadePlayer) {
         player.player?.let { p ->
             teamSelectorUI.show(p)

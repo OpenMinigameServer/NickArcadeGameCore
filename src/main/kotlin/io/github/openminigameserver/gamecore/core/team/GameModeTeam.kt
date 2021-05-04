@@ -4,8 +4,9 @@ import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePla
 import org.bukkit.GameMode
 import org.bukkit.Material
 
-open class GameModeTeam(name: String, val gameMode: GameMode, selectorMaterial: Material, maxPlayers: Int) : GameTeam(
+open class GameModeTeam(name: String, friendlyName: String, val gameMode: GameMode, selectorMaterial: Material, maxPlayers: Int) : GameTeam(
     name,
+    friendlyName,
     selectorMaterial, maxPlayers
 ) {
     override fun onPlayerAdd(p: ArcadePlayer) {

@@ -11,6 +11,7 @@ import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.game.hosting.GameHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PartyHostingInfo
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
+import io.github.openminigameserver.gamecore.core.game.mode.RoleGameModeDefinition
 import io.github.openminigameserver.gamecore.core.phases.GameEndPhase
 import io.github.openminigameserver.gamecore.core.phases.LobbyPhase
 import io.github.openminigameserver.gamecore.core.phases.PhasesTimer
@@ -20,10 +21,12 @@ import io.github.openminigameserver.gamecore.core.team.GameTeam
 import io.github.openminigameserver.gamecore.core.team.LobbyTeam
 import io.github.openminigameserver.gamecore.core.team.SpectatorTeam
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
+import io.github.openminigameserver.nickarcade.core.manager.getArcadeSender
 import io.github.openminigameserver.nickarcade.display.managers.ScoreboardManager
 import io.github.openminigameserver.nickarcade.plugin.extensions.async
 import io.github.openminigameserver.nickarcade.plugin.extensions.launch
 import io.github.openminigameserver.nickarcade.plugin.extensions.sync
+import io.github.openminigameserver.nickarcade.plugin.extensions.worldBoundEvent
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -31,6 +34,7 @@ import org.bukkit.Bukkit
 import org.bukkit.GameRule
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.event.player.PlayerRespawnEvent
 import java.io.Closeable
 import java.util.*
 import kotlin.collections.ArrayDeque
@@ -45,6 +49,7 @@ data class GameInstance(
     var state: GameState = GameState.WAITING_FOR_PLAYERS,
     @JsonProperty("_id") val id: UUID = UUID.randomUUID()
 ) : Closeable {
+    val maxPlayerCount: Int = mode.maximumPlayers
     val audience = GameAudience(this)
     private val spectatorTeam = SpectatorTeam()
     internal val lobbyTeam = LobbyTeam()
@@ -91,6 +96,11 @@ data class GameInstance(
             setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
             setGameRule(GameRule.DO_MOB_SPAWNING, false)
             setGameRule(GameRule.DO_WEATHER_CYCLE, false)
+        }
+
+        worldBoundEvent<PlayerRespawnEvent>(worldArena, forceBlocking = true) {
+            val currentGame = player.getArcadeSender().currentGame ?: return@worldBoundEvent
+            this.respawnLocation = currentGame.respawnLocation
         }
     }
 
@@ -146,4 +156,12 @@ data class GameInstance(
     }
 
     val isDeveloperGame get() = hostingInfo is PartyHostingInfo && (hostingInfo as PartyHostingInfo).party?.isDeveloperGameParty() == true
+
+    val isPrivateGame get() = hostingInfo is PartyHostingInfo && (hostingInfo as PartyHostingInfo).party?.isPrivateGameParty() == true
+
+    val hostParty get() = (hostingInfo as? PartyHostingInfo)?.party
+
+    fun isHostPartyLeader(player: ArcadePlayer) = hostParty?.isLeader(player) ?: false
+
+    val isRolePlayGame get() = mode is RoleGameModeDefinition
 }

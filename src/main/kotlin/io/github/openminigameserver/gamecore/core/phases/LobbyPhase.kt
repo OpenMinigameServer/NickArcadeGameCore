@@ -17,7 +17,6 @@ class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", lobbyWaitingTime.seconds) {
     }
 
     override suspend fun shouldResetTimer(): Boolean {
-        val hostingInfo = game.hostingInfo
         val playerCount = game.playerCount
 
         return !game.isDeveloperGame && (playerCount < game.mode.minimumPlayersToStart || playerCount == 0)

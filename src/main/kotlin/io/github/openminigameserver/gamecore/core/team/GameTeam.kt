@@ -6,7 +6,12 @@ import org.bukkit.Material
 import org.bukkit.scoreboard.Team
 import java.util.*
 
-abstract class GameTeam(var name: String, var selectorMaterial: Material, var maxPlayers: Int) {
+abstract class GameTeam(
+    var name: String,
+    var friendlyName: String,
+    var selectorMaterial: Material,
+    var maxPlayers: Int
+) {
     lateinit var game: GameInstance
 
     private val playerSet: MutableSet<ArcadePlayer> = mutableSetOf()
@@ -24,9 +29,22 @@ abstract class GameTeam(var name: String, var selectorMaterial: Material, var ma
         }
     }
 
-    open fun configureScoreboardTeam(team: Team) {}
+    open fun configureScoreboardTeam(team: Team, target: ArcadePlayer, viewer: ArcadePlayer) {}
 
     open fun onPlayerAdd(p: ArcadePlayer) {}
 
     open fun onPlayerRemove(p: ArcadePlayer) {}
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is GameTeam) return false
+
+        if (name != other.name) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
 }

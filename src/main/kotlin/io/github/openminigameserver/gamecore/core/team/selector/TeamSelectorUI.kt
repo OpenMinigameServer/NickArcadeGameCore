@@ -1,7 +1,6 @@
 package io.github.openminigameserver.gamecore.core.team.selector
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import io.github.openminigameserver.gamecore.core.game.GameInstance
 import io.github.openminigameserver.gamecore.core.team.ColoredGameModeTeam
@@ -22,12 +21,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.checkerframework.checker.nullness.qual.NonNull
 
-class TeamSelectorUI(val game: GameInstance, val lobbyTeam: LobbyTeam) : ChestGui(1, "Team Selector") {
-    val selectedTeamPlayers = mutableMapOf<String, MutableList<ArcadePlayer>>()
-
-    private fun getPlayerListForTeam(team: GameTeam): MutableList<ArcadePlayer> {
-        return selectedTeamPlayers.getOrPut(team.name) { mutableListOf() }
-    }
+class TeamSelectorUI(game: GameInstance, lobbyTeam: LobbyTeam) : TeamSelectorUIBase(game, lobbyTeam) {
 
     override fun show(humanEntity: HumanEntity) {
         panes.clear()
@@ -43,7 +37,7 @@ class TeamSelectorUI(val game: GameInstance, val lobbyTeam: LobbyTeam) : ChestGu
         GuiItem(ItemStack(team.selectorMaterial).itemMeta {
             val displayNameComponent =
                 text(
-                    "${team.name} Team",
+                    "${team.friendlyName} Team",
                     (team as? ColoredGameModeTeam)?.color ?: WHITE
                 ).disableItalic()
 
@@ -56,14 +50,11 @@ class TeamSelectorUI(val game: GameInstance, val lobbyTeam: LobbyTeam) : ChestGu
             launch {
                 val sender = (e.whoClicked as Player).getArcadeSender()
 
-                if (getPlayerListForTeam(team).size < team.maxPlayers) {
-                    selectedTeamPlayers.forEach { teamEntry -> teamEntry.value.removeIf { it == sender } }
-                    getPlayerListForTeam(team).add(sender)
-
-                    this@TeamSelectorUI.update()
-                }
+                setPlayerTeam(sender, team)
+                this@TeamSelectorUI.update()
             }
         }
+
 
     private fun getGameTeamItemLore(
         displayNameComponent: @NonNull Component,
