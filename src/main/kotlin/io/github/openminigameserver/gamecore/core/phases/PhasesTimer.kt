@@ -16,7 +16,7 @@ class PhasesTimer(val game: GameInstance) {
     fun launch() {
         isRunning = true
         launchAsync {
-            game.currentPhase.onStart()
+            startCurrentPhase()
             while (isRunning) {
                 if (game.phases.isEmpty()) {
                     isRunning = false
@@ -43,7 +43,7 @@ class PhasesTimer(val game: GameInstance) {
                             )
                         )
                     }
-                    sync { game.currentPhase.onEnd() }
+                    sync { endCurrentPhase() }
                     game.phases.removeFirstOrNull()
 
                     if (game.isDeveloperGame) {
@@ -54,12 +54,22 @@ class PhasesTimer(val game: GameInstance) {
                             )
                         )
                     }
-                    sync { game.currentPhase.onStart() }
+                    sync { startCurrentPhase() }
                     skipCurrent = false
                 }
                 delay(1.seconds)
             }
         }
+    }
+
+    private suspend fun endCurrentPhase() {
+        game.currentPhase.unregisterEvents()
+        game.currentPhase.onEnd()
+    }
+
+    private suspend fun startCurrentPhase() {
+        game.currentPhase.registerEvents()
+        game.currentPhase.onStart()
     }
 
     fun stop() {

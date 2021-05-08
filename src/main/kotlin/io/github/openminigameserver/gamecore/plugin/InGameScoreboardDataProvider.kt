@@ -1,7 +1,7 @@
 package io.github.openminigameserver.gamecore.plugin
 
 import io.github.openminigameserver.gamecore.core.game.GameState
-import io.github.openminigameserver.gamecore.core.phases.LobbyPhase
+import io.github.openminigameserver.gamecore.core.phases.impl.LobbyPhase
 import io.github.openminigameserver.gamecore.core.players.currentGame
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.display.scoreboard.ScoreboardDataProvider

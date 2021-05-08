@@ -3,7 +3,7 @@ package io.github.openminigameserver.gamecore.core.game.properties
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import kotlin.reflect.KProperty
 
-class RequiredGamePropertyDefinition<T>(name: String, friendlyName: String, type: GamePropertyType, javaType: Class<T>) :
+open class RequiredGamePropertyDefinition<T>(name: String, friendlyName: String, type: GamePropertyType, javaType: Class<T>) :
     GamePropertyDefinition<T>(
         name, friendlyName, type,
         javaType

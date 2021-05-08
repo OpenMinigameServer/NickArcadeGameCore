@@ -2,13 +2,12 @@ package io.github.openminigameserver.gamecore.core.arena
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import io.github.openminigameserver.gamecore.core.arena.checks.ArenaValidityCheckResult
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
-import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
-import io.github.openminigameserver.gamecore.core.game.properties.RequiredGamePropertyDefinition
-import io.github.openminigameserver.gamecore.core.game.properties.getValue
-import io.github.openminigameserver.gamecore.core.game.properties.setValue
+import io.github.openminigameserver.gamecore.core.game.properties.*
 import io.github.openminigameserver.hypixelapi.HypixelApi
 import java.util.*
 
@@ -16,7 +15,7 @@ data class ArenaDefinition(
     val gameMode: GameModeDefinition,
     val name: String,
     val worldFileName: String,
-    @PublishedApi internal val properties: MutableMap<String, JsonNode> = mutableMapOf(),
+    @PublishedApi internal val properties: MutableMap<String, WrappedPropertyValue> = mutableMapOf(),
     @JsonProperty("_id") val id: UUID = UUID.randomUUID(),
 ) {
     fun checkValidity(): ArenaValidityCheckResult {
@@ -28,6 +27,7 @@ data class ArenaDefinition(
         return ArenaValidityCheckResult(missingProperties.isEmpty(), missingProperties)
     }
 
+    @get:JsonIgnore
     val isValid
         get() = checkValidity().valid
 
@@ -39,9 +39,18 @@ data class ArenaDefinition(
         return name
     }
 
+    companion object {
+        val mapper: ObjectMapper = HypixelApi.objectMapper.copy().activateDefaultTyping(
+            BasicPolymorphicTypeValidator.builder().allowIfBaseType(Any::class.java).build(),
+            ObjectMapper.DefaultTyping.EVERYTHING,
+            JsonTypeInfo.As.PROPERTY
+        )
+    }
+
     @JsonIgnore
     inline operator fun <reified T> get(prop: GamePropertyDefinition<T>): T? {
-        return properties[prop.name]?.let { HypixelApi.objectMapper.treeToValue(it, T::class.java) }
+        if (prop.type != GamePropertyType.DEFAULT && prop.type != GamePropertyType.ARENA) throw Exception("Property ${prop.friendlyName} is not a property that can be used in arenas.")
+        return properties[prop.name]?.let { it.value as T }
     }
 
     @JsonIgnore
@@ -50,6 +59,6 @@ data class ArenaDefinition(
             properties.remove(prop.name)
             return
         }
-        properties[prop.name] = HypixelApi.objectMapper.valueToTree(value)
+        properties[prop.name] = WrappedPropertyValue(value)
     }
 }

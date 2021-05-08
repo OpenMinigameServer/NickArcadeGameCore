@@ -3,11 +3,18 @@ package io.github.openminigameserver.gamecore.core.game
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import java.util.*
 
-open class GameDefinition(val friendlyName: String, val name: String) {
+open class GameDefinition(val friendlyName: String, name: String) {
+
+    var name = name
+        internal set
+
     private val modes = mutableMapOf<String, GameModeDefinition>()
     val gameModes: Map<String, GameModeDefinition> = Collections.unmodifiableMap(modes)
 
     fun registerGameMode(gameMode: GameModeDefinition) {
+        //Just for safety
+        gameMode.name = gameMode.name.toUpperCase()
+
         gameMode.game = this
         modes[gameMode.name] = gameMode
     }

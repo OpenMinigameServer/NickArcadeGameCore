@@ -4,6 +4,7 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult
 import cloud.commandframework.arguments.parser.ArgumentParser
 import cloud.commandframework.context.CommandContext
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException
+import io.github.openminigameserver.gamecore.core.commands.GameCommandManager.gameCommandKey
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import java.util.*
@@ -34,8 +35,7 @@ class GameModeParser<C> : ArgumentParser<C, GameModeDefinition> {
     }
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): List<String> {
-
-        val game = this.game ?: commandContext.asMap().values.firstOrNull { it is GameDefinition } as? GameDefinition
+        val game = this.game ?: commandContext.currentArgument?.owningCommand?.commandMeta?.get(gameCommandKey)?.orElse(null) ?: commandContext.asMap().values.firstOrNull { it is GameDefinition } as? GameDefinition
         if (game != null) {
             return game.gameModes.keys.map { it.toLowerCase() }
         }

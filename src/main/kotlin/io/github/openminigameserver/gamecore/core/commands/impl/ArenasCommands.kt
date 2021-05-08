@@ -15,6 +15,7 @@ import io.github.openminigameserver.nickarcade.plugin.extensions.command
 import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor.*
 
 object ArenasCommands {
@@ -56,7 +57,26 @@ object ArenasCommands {
             sender.audience.sendMessage(separator {
                 append(text("There are no arenas for $mode!", RED))
             })
+            return@command
         }
+
+        sender.audience.sendMessage(
+            text {
+                it.append(text("Available arenas: ", GOLD))
+                arenas.forEach { arena ->
+                    it.append(newline()).append(
+                        text(arena.name, if (arena.isValid) GREEN else RED).clickEvent(
+                            ClickEvent.runCommand(
+                                "/$arenasCommandPrefix info ${mode.name.toLowerCase()} ${arena.name}".replace(
+                                    "<game>",
+                                    game.name.toLowerCase()
+                                )
+                            )
+                        )
+                    )
+                }
+            }
+        )
     }
 
     @CommandMethod("$arenasCommandPrefix info <mode> <arena>")
@@ -84,6 +104,7 @@ object ArenasCommands {
             }
         )
     }
+
     @CommandMethod("$arenasCommandPrefix remove <mode> <arena>")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun removeArena(

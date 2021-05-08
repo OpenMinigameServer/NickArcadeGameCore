@@ -10,7 +10,9 @@ import io.github.openminigameserver.gamecore.core.phases.GamePhase
 import io.github.openminigameserver.gamecore.core.team.GameTeam
 import java.util.*
 
-open class GameModeDefinition(val name: String, val friendlyName: String) : GameDefinitionPropertyContainer {
+open class GameModeDefinition(name: String, val friendlyName: String) : GameDefinitionPropertyContainer {
+    var name = name
+        internal set
     lateinit var game: GameDefinition
     var minimumPlayersToStart = 2
     var maximumPlayers = 2

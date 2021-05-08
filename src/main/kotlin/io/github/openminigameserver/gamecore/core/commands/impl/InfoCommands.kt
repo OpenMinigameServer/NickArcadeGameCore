@@ -46,6 +46,7 @@ object InfoCommands {
         if (canJoin) {
             GameInstance(game, mode, arena, info).also { game ->
                 game.loadArena()
+                game.startPhasesTimer()
                 if (party != null) {
                     party.membersList.forEach {
                         game.addPlayer(it.player)

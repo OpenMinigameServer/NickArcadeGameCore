@@ -12,10 +12,10 @@ import io.github.openminigameserver.gamecore.core.game.hosting.GameHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PartyHostingInfo
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.core.game.mode.RoleGameModeDefinition
-import io.github.openminigameserver.gamecore.core.phases.GameEndPhase
-import io.github.openminigameserver.gamecore.core.phases.LobbyPhase
 import io.github.openminigameserver.gamecore.core.phases.PhasesTimer
-import io.github.openminigameserver.gamecore.core.players.PlayerGameManager
+import io.github.openminigameserver.gamecore.core.phases.impl.GameEndPhase
+import io.github.openminigameserver.gamecore.core.phases.impl.LobbyPhase
+import io.github.openminigameserver.gamecore.core.players.GameInstanceManager
 import io.github.openminigameserver.gamecore.core.players.currentGame
 import io.github.openminigameserver.gamecore.core.team.GameTeam
 import io.github.openminigameserver.gamecore.core.team.LobbyTeam
@@ -72,8 +72,7 @@ data class GameInstance(
     internal val phasesTimer = PhasesTimer(this)
 
     init {
-        PlayerGameManager.registerGame(this)
-        phasesTimer.launch()
+        GameInstanceManager.registerGame(this)
     }
 
     lateinit var worldArena: World
@@ -144,7 +143,7 @@ data class GameInstance(
 
     override fun close() {
         phasesTimer.stop()
-        PlayerGameManager.unregisterGame(this)
+        GameInstanceManager.unregisterGame(this)
         teams.forEach {
             it.players.asSequence().forEach { p ->
                 p.player?.teleport(Bukkit.getWorlds().first().spawnLocation)
@@ -153,6 +152,10 @@ data class GameInstance(
             }
         }
         Bukkit.unloadWorld(worldArena, false)
+    }
+
+    fun startPhasesTimer() {
+        phasesTimer.launch()
     }
 
     val isDeveloperGame get() = hostingInfo is PartyHostingInfo && (hostingInfo as PartyHostingInfo).party?.isDeveloperGameParty() == true

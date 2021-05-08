@@ -6,7 +6,7 @@ import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePla
 import io.github.openminigameserver.nickarcade.core.data.sender.player.extra.RuntimeExtraDataTag
 import java.util.*
 
-object PlayerGameManager {
+object GameInstanceManager {
 
     private val currentGames = mutableMapOf<UUID, GameInstance>()
     val games: Map<UUID, GameInstance> = Collections.unmodifiableMap(currentGames)
@@ -26,7 +26,7 @@ object PlayerGameManager {
 val currentGameTag = RuntimeExtraDataTag.of<UUID>("currentGame")
 
 var ArcadePlayer.currentGame: GameInstance?
-    get() = this[currentGameTag]?.let { PlayerGameManager.getGameById(it) }
+    get() = this[currentGameTag]?.let { GameInstanceManager.getGameById(it) }
     set(value) {
         this[currentGameTag] = value?.id
     }
