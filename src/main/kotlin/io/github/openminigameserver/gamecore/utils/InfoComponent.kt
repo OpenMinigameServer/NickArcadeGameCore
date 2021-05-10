@@ -10,7 +10,7 @@ class InfoComponent(private val info: String, private val value: Any?) : Compone
             Component.text(
                 value?.toString() ?: "<N/A>",
                 if (value is Boolean) {
-                    if (value) DARK_GREEN else DARK_RED
+                    if (value) DARK_GREEN else RED
                 } else GOLD
             )
         )

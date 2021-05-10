@@ -19,7 +19,7 @@ inline fun <reified T> GameDefinitionPropertyContainer.listProp(
     friendlyName: String,
     type: GamePropertyType = GamePropertyType.DEFAULT
 ): ListGamePropertyDefinition<T> {
-    return ListGamePropertyDefinition<T>(name, friendlyName, type).also {
+    return ListGamePropertyDefinition<T>(name, friendlyName, type, T::class.java).also {
         properties.getOrPut(type) { mutableListOf() }.add(it)
     }
 }

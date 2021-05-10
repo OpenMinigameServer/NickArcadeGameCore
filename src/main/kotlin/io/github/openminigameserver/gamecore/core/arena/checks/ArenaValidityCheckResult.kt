@@ -4,5 +4,6 @@ import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDe
 
 data class ArenaValidityCheckResult(
     val valid: Boolean,
-    val missingProperties: List<GamePropertyDefinition<*>> = emptyList()
+    val missingProperties: List<GamePropertyDefinition<*>>,
+    val missingPropertiesRawName: List<String>
 )

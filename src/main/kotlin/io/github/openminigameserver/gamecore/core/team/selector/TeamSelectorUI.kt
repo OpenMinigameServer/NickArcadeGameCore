@@ -21,7 +21,22 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.checkerframework.checker.nullness.qual.NonNull
 
+val GameTeam.displayComponent
+    get() = text(
+        "$friendlyName Team",
+        (this as? ColoredGameModeTeam)?.color ?: WHITE
+    ).disableItalic()
+
+
 class TeamSelectorUI(game: GameInstance, lobbyTeam: LobbyTeam) : TeamSelectorUIBase(game, lobbyTeam) {
+    companion object {
+
+        fun getTeamItemStack(team: GameTeam) =
+            ItemStack(team.selectorMaterial).itemMeta {
+                val displayNameComponent = team.displayComponent
+                displayName(displayNameComponent)
+            }
+    }
 
     override fun show(humanEntity: HumanEntity) {
         panes.clear()
@@ -33,18 +48,10 @@ class TeamSelectorUI(game: GameInstance, lobbyTeam: LobbyTeam) : TeamSelectorUIB
         super.show(humanEntity)
     }
 
-    private fun getGameTeamItem(team: GameTeam) =
-        GuiItem(ItemStack(team.selectorMaterial).itemMeta {
-            val displayNameComponent =
-                text(
-                    "${team.friendlyName} Team",
-                    (team as? ColoredGameModeTeam)?.color ?: WHITE
-                ).disableItalic()
-
-            displayName(displayNameComponent)
-
+    fun getGameTeamItem(team: GameTeam) =
+        GuiItem(getTeamItemStack(team).itemMeta {
             val players = getPlayerListForTeam(team)
-            lore(getGameTeamItemLore(displayNameComponent, players, team))
+            lore(getGameTeamItemLore(displayName() ?: empty(), players, team))
         }) { e ->
             e.isCancelled = true
             launch {

@@ -1,7 +1,6 @@
 package io.github.openminigameserver.gamecore.core.team
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.game.GameInstance
 import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
 import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyType
@@ -55,19 +54,11 @@ abstract class GameTeam(
     @JsonIgnore
     inline operator fun <reified T> get(prop: GamePropertyDefinition<T>): T? {
         if (prop.type != GamePropertyType.TEAM) throw Exception("Property ${prop.friendlyName} is not a property that can be used in teams.")
-        return game.arena.properties[getPropertyName(prop)]?.let { ArenaDefinition.mapper.treeToValue(it, T::class.java) }
+        return game.arena[prop, this]
     }
 
     @JsonIgnore
     inline operator fun <reified T> set(prop: GamePropertyDefinition<T>, value: T?) {
-        val name = getPropertyName(prop)
-        if (value == null) {
-            game.arena.properties.remove(name)
-            return
-        }
-        game.arena.properties[name] = ArenaDefinition.mapper.valueToTree(value)
+        game.arena.set(prop, value, this)
     }
-
-    inline fun <reified T> getPropertyName(prop: GamePropertyDefinition<T>) =
-        "team_${name}_${prop.name}"
 }

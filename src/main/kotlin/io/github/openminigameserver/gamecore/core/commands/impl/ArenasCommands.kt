@@ -7,12 +7,18 @@ import io.github.openminigameserver.gamecore.core.arena.ArenaLocation
 import io.github.openminigameserver.gamecore.core.arena.manager.ArenaManager
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
+import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
+import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyType
+import io.github.openminigameserver.gamecore.core.team.GameTeam
+import io.github.openminigameserver.gamecore.core.team.selector.displayComponent
 import io.github.openminigameserver.gamecore.utils.InfoComponent
 import io.github.openminigameserver.hypixelapi.models.HypixelPackageRank
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.separator
+import io.github.openminigameserver.nickarcade.plugin.extensions.clickEvent
 import io.github.openminigameserver.nickarcade.plugin.extensions.command
 import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRank
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
@@ -87,22 +93,82 @@ object ArenasCommands {
         @Argument("mode") mode: GameModeDefinition,
         @Argument("arena") arena: ArenaDefinition
     ) = command(sender) {
+
+        val teams = mapOf(*mode.modeTeams.map { it().let { it.name to it } }.toTypedArray())
         sender.audience.sendMessage(
             text { b ->
                 val check = arena.checkValidity()
+                val missingProperties = check.missingProperties
+                val properties = arena.gameMode.properties.values.flatten()
+
                 b.append(InfoComponent("Name", arena.name)).append(newline())
                 b.append(InfoComponent("Id", arena.id)).append(newline())
                 b.append(InfoComponent("World File Name", arena.worldFileName)).append(newline())
-                b.append(InfoComponent("Is Valid", check.valid))
-                if (check.missingProperties.isNotEmpty()) {
+                b.append(InfoComponent("Is Valid", check.valid)).append(newline())
+                b.append(InfoComponent("Teams", teams.values.joinToString { it.friendlyName }))
+
+                if (properties.isNotEmpty()) {
                     b.append(newline())
-                    b.append(text("Missing Properties:", RED))
-                    check.missingProperties.forEach { prop ->
-                        b.append(text(prop.friendlyName, YELLOW))
+                    b.append(text("Properties:", GREEN))
+                    properties.forEach { prop ->
+                        var isMissing = missingProperties.contains(prop)
+
+                        if (prop.type == GamePropertyType.TEAM) {
+                            val teamPropPrefix = "team_${prop.name}_"
+                            val missingForTeams =
+                                check.missingPropertiesRawName.filter { it.startsWith(teamPropPrefix) }
+                                    .map { it.removePrefix(teamPropPrefix) }.mapNotNull { teams[it] }
+
+                            teams.values.forEach { team ->
+                                isMissing = missingForTeams.any { it.name == team.name }
+                                b.append(newline()).append(
+                                    (text(" - " + prop.friendlyName, if (isMissing) RED else GREEN))
+                                        .append(text(" on ", GREEN)).append(
+                                            team.displayComponent.colorIfAbsent(if (isMissing) RED else GREEN)
+                                        ).hoverEvent(text {
+                                            it.append(text("Current value: ", GOLD))
+                                            it.append(
+                                                text(
+                                                    arena[prop as GamePropertyDefinition<Any>, team]?.toString() ?: "<N/A>",
+                                                    GOLD
+                                                )
+                                            ).append(newline())
+                                            it.append(newline())
+                                            it.append(text("Click to set this property value.", GREEN))
+                                        })
+                                        .createTeamPropertySetClickEvent(arena, prop, team)
+                                )
+                            }
+                            return@forEach
+                        }
+
+                        b.append(newline()).append(text(" - " + prop.friendlyName, if (isMissing) RED else GREEN))
                     }
                 }
             }
         )
+    }
+
+    private fun Component.createTeamPropertySetClickEvent(
+        arena: ArenaDefinition,
+        prop: GamePropertyDefinition<*>,
+        team: GameTeam
+    ): Component {
+        val successfullySetValue = text {
+            it.append(text("Successfully set ", GREEN))
+            it.append(text(prop.friendlyName, GOLD))
+            it.append(text(" for ", GREEN))
+            it.append(team.displayComponent.colorIfAbsent(GOLD))
+            it.append(text(" to ", GREEN))
+        }
+        return this.clickEvent {
+            if (prop.javaType == ArenaLocation::class.java) {
+                val value = ArenaLocation(location)
+                arena.set(prop as GamePropertyDefinition<ArenaLocation>, value, team)
+                sendMessage(successfullySetValue.append(text(value.toString(), GOLD)))
+                ArenaManager.saveArena(arena)
+            }
+        }
     }
 
     @CommandMethod("$arenasCommandPrefix remove <mode> <arena>")
