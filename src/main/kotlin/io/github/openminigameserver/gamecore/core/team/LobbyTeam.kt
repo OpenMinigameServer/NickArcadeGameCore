@@ -58,7 +58,7 @@ class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AI
 
     fun applyTeamSelections() {
         teamSelectorUI.selectedTeamPlayers.forEach { (teamName, players) ->
-            val team = game.teams.firstOrNull { it.name == teamName }
+            val team = game.allTeams.firstOrNull { it.name == teamName }
             if (team != null) players.forEach { it.currentTeam = team }
         }
     }

@@ -55,11 +55,12 @@ data class GameInstance(
     internal val lobbyTeam = LobbyTeam()
     private val lobbyPhase = LobbyPhase()
     private val gameEndPhase = GameEndPhase()
-    val teams =
-        (mode.modeTeams.map { it() } + spectatorTeam + lobbyTeam).onEach { it.game = this@GameInstance }
+    val teams = mode.modeTeams.map { it() }
+    val allTeams =
+        (teams + spectatorTeam + lobbyTeam).onEach { it.game = this@GameInstance }
 
     val playerCount: Int
-        get() = teams.filterNot { it == spectatorTeam }.sumBy { it.players.size }
+        get() = allTeams.filterNot { it == spectatorTeam }.sumBy { it.players.size }
 
     val phases =
         ArrayDeque(listOf(lobbyPhase) + mode.modePhases.map { it() } + gameEndPhase).onEach {
@@ -132,7 +133,7 @@ data class GameInstance(
     }
 
     fun getPlayerTeam(player: ArcadePlayer): GameTeam {
-        return teams.firstOrNull { it.players.contains(player) } ?: lobbyTeam.also {
+        return allTeams.firstOrNull { it.players.contains(player) } ?: lobbyTeam.also {
             it.addPlayer(player)
         }
     }
@@ -144,7 +145,7 @@ data class GameInstance(
     override fun close() {
         phasesTimer.stop()
         GameInstanceManager.unregisterGame(this)
-        teams.forEach {
+        allTeams.forEach {
             it.players.asSequence().forEach { p ->
                 p.player?.teleport(Bukkit.getWorlds().first().spawnLocation)
                 it.removePlayer(p)

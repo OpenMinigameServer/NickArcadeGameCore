@@ -41,7 +41,7 @@ class TeamSelectorUI(game: GameInstance, lobbyTeam: LobbyTeam) : TeamSelectorUIB
     override fun show(humanEntity: HumanEntity) {
         panes.clear()
         addPane(OutlinePane(9, 1).apply {
-            game.teams.filter { !it.selectorMaterial.isAir }.forEach { team ->
+            game.allTeams.filter { !it.selectorMaterial.isAir }.forEach { team ->
                 addItem(getGameTeamItem(team))
             }
         })
