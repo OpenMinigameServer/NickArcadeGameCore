@@ -18,7 +18,7 @@ data class  ArenaDefinition(
     fun checkValidity(): ArenaValidityCheckResult {
         val missingPropRaw = mutableListOf<String>()
         val missingProperties =
-            gameMode.properties.values.flatten().filterIsInstance<RequiredGamePropertyDefinition<*>>().filterNot { prop ->
+            gameMode.properties.values.flatten().filterNot { prop ->
                 val propertyNames = getPropertyNames(gameMode, prop)
                 propertyNames.all { name -> properties.containsKey(name) }.also {
                     if (!it) missingPropRaw.addAll(propertyNames)

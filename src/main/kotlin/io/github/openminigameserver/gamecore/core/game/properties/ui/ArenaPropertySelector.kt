@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.pane.util.Mask
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
-import io.github.openminigameserver.gamecore.core.game.properties.RequiredGamePropertyDefinition
 import io.github.openminigameserver.gamecore.utils.InfoComponent
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.manager.getArcadeSender
@@ -49,8 +48,6 @@ class ArenaPropertySelector(
                         lore(
                             listOf(
                                 InfoComponent("Name", prop.friendlyName).asComponent()
-                                    .disableItalic(),
-                                InfoComponent("Required", prop is RequiredGamePropertyDefinition).asComponent()
                                     .disableItalic(),
                                 InfoComponent("Value", (arena[prop as GamePropertyDefinition<Any>])).asComponent()
                                     .disableItalic(),

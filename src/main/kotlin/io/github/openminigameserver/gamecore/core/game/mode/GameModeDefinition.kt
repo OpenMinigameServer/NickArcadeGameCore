@@ -2,10 +2,7 @@ package io.github.openminigameserver.gamecore.core.game.mode
 
 import io.github.openminigameserver.gamecore.core.arena.ArenaLocation
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
-import io.github.openminigameserver.gamecore.core.game.properties.GameDefinitionPropertyContainer
-import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
-import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyType
-import io.github.openminigameserver.gamecore.core.game.properties.requiredProp
+import io.github.openminigameserver.gamecore.core.game.properties.*
 import io.github.openminigameserver.gamecore.core.phases.GamePhase
 import io.github.openminigameserver.gamecore.core.team.GameTeam
 import java.util.*
@@ -24,7 +21,7 @@ open class GameModeDefinition(name: String, val friendlyName: String) : GameDefi
     val modeTeams: Set<() -> GameTeam> = Collections.unmodifiableSet(teams)
     val modePhases: Set<() -> GamePhase> = Collections.unmodifiableSet(phases)
 
-    val spawnLocation = requiredProp<ArenaLocation>("spawnLocation", "Spawn Location", GamePropertyType.ARENA)
+    val spawnLocation = prop<ArenaLocation>("spawnLocation", "Spawn Location", GamePropertyType.ARENA)
 
     fun addTeam(team: () -> GameTeam) {
         teams.add(team)

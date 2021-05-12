@@ -13,14 +13,14 @@ open class GamePropertyDefinition<T>(
 inline operator fun <reified T> GamePropertyDefinition<T>.getValue(
     definition: ArenaDefinition,
     property: KProperty<*>
-): T? {
-    return definition[this]
+): T {
+    return definition[this]!!
 }
 
 inline operator fun <reified V> GamePropertyDefinition<V>.setValue(
     definition: ArenaDefinition,
     property: KProperty<*>,
-    value: V?
+    value: V
 ) {
     definition[this] = value
 }

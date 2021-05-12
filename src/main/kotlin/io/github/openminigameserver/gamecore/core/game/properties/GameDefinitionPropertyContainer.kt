@@ -23,23 +23,3 @@ inline fun <reified T> GameDefinitionPropertyContainer.listProp(
         properties.getOrPut(type) { mutableListOf() }.add(it)
     }
 }
-
-inline fun <reified T> GameDefinitionPropertyContainer.requiredProp(
-    name: String,
-    friendlyName: String,
-    type: GamePropertyType = GamePropertyType.DEFAULT
-): RequiredGamePropertyDefinition<T> {
-    return RequiredGamePropertyDefinition(name, friendlyName, type, T::class.java).also {
-        properties.getOrPut(type) { mutableListOf() }.add(it)
-    }
-}
-
-inline fun <reified T> GameDefinitionPropertyContainer.requiredListProp(
-    name: String,
-    friendlyName: String,
-    type: GamePropertyType = GamePropertyType.DEFAULT
-): RequiredListGamePropertyDefinition<T> {
-    return RequiredListGamePropertyDefinition<T>(name, friendlyName, type).also {
-        properties.getOrPut(type) { mutableListOf() }.add(it)
-    }
-}

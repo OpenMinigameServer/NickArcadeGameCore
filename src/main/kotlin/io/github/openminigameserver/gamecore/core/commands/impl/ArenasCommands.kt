@@ -122,7 +122,7 @@ object ArenasCommands {
                             teams.values.forEach { team ->
                                 isMissing = missingForTeams.any { it.name == team.name }
                                 b.append(newline()).append(
-                                    (text(" - " + prop.friendlyName, if (isMissing) RED else GREEN))
+                                    (text(" - " + prop.friendlyName, if (isMissing) AQUA else GREEN))
                                         .append(text(" on ", GREEN)).append(
                                             team.displayComponent.colorIfAbsent(if (isMissing) RED else GREEN)
                                         ).hoverEvent(text {
