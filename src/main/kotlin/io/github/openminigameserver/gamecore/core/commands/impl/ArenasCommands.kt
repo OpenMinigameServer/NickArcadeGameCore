@@ -23,6 +23,7 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 object ArenasCommands {
     private const val arenasCommandPrefix = "game <game> admin arenas"
@@ -111,7 +112,7 @@ object ArenasCommands {
                     b.append(newline())
                     b.append(text("Properties:", GREEN))
                     properties.forEach { prop ->
-                        var isMissing = missingProperties.contains(prop)
+                        val isMissing = AtomicBoolean(missingProperties.contains(prop))
 
                         if (prop.type == GamePropertyType.TEAM) {
                             val teamPropPrefix = "team_${prop.name}_"
@@ -120,11 +121,11 @@ object ArenasCommands {
                                     .map { it.removePrefix(teamPropPrefix) }.mapNotNull { teams[it] }
 
                             teams.values.forEach { team ->
-                                isMissing = missingForTeams.any { it.name == team.name }
+                                isMissing.set(missingForTeams.any { it.name == team.name })
                                 b.append(newline()).append(
-                                    (text(" - " + prop.friendlyName, if (isMissing) AQUA else GREEN))
+                                    (text(" - " + prop.friendlyName, if (isMissing.get()) RED else GREEN))
                                         .append(text(" on ", GREEN)).append(
-                                            team.displayComponent.colorIfAbsent(if (isMissing) RED else GREEN)
+                                            team.displayComponent.colorIfAbsent(if (isMissing.get()) RED else GREEN)
                                         ).hoverEvent(text {
                                             it.append(text("Current value: ", GOLD))
                                             it.append(
@@ -142,7 +143,7 @@ object ArenasCommands {
                             return@forEach
                         }
 
-                        b.append(newline()).append(text(" - " + prop.friendlyName, if (isMissing) RED else GREEN))
+                        b.append(newline()).append(text(" - " + prop.friendlyName, if (isMissing.get()) RED else GREEN))
                     }
                 }
             }
