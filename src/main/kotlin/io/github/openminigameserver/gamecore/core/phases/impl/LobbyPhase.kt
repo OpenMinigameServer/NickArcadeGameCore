@@ -4,8 +4,10 @@ import io.github.openminigameserver.gamecore.core.game.GameState
 import io.github.openminigameserver.gamecore.core.phases.TimedPhase
 import io.github.openminigameserver.gamecore.core.phases.disablePlayerDamage
 import io.github.openminigameserver.gamecore.core.phases.disablePlayerHunger
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.*
+import org.bukkit.NamespacedKey
 import kotlin.time.seconds
 
 const val lobbyWaitingTime = 15
@@ -42,7 +44,16 @@ class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", lobbyWaitingTime.seconds) {
         }
         val shouldSend = time == 15 || time == 10 || time <= 5
         if (shouldSend) {
-            game.audience.sendMessage(
+            val audience = game.audience
+            audience.playSound(
+                Sound.sound(
+                    NamespacedKey.minecraft("block.note_block.hat"),
+                    Sound.Source.MASTER,
+                    1f,
+                    1f
+                )
+            )
+            audience.sendMessage(
                 text(
                     "The game starts in ", YELLOW
                 ).append(
