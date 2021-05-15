@@ -51,7 +51,7 @@ data class GameInstance(
 ) : Closeable {
     val maxPlayerCount: Int = mode.maximumPlayers
     val audience = GameAudience(this)
-    private val spectatorTeam = SpectatorTeam()
+    val spectatorTeam = SpectatorTeam()
     internal val lobbyTeam = LobbyTeam()
     private val lobbyPhase = LobbyPhase()
     private val gameEndPhase = GameEndPhase()

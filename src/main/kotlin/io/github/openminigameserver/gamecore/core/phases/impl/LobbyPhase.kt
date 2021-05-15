@@ -43,7 +43,7 @@ class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", lobbyWaitingTime.seconds) {
             else -> GREEN
         }
         val shouldSend = time == 15 || time == 10 || time <= 5
-        if (shouldSend) {
+        if (shouldSend && !shouldResetTimer()) {
             val audience = game.audience
             audience.playSound(
                 Sound.sound(

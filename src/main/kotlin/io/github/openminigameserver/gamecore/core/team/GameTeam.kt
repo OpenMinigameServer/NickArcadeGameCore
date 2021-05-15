@@ -15,6 +15,13 @@ abstract class GameTeam(
     var selectorMaterial: Material,
     var maxPlayers: Int
 ) {
+    val isFull: Boolean
+        get() {
+            val count = players.count()
+            val max = maxPlayers.coerceAtLeast(players.count())
+            return players.isNotEmpty() && count >= max
+        }
+
     lateinit var game: GameInstance
 
     private val playerSet: MutableSet<ArcadePlayer> = mutableSetOf()

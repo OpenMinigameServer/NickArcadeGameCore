@@ -82,10 +82,9 @@ class TeamSelectorUI(game: GameInstance, lobbyTeam: LobbyTeam) : TeamSelectorUIB
         players: MutableList<ArcadePlayer>,
         team: GameTeam
     ): Array<out @NonNull Component> {
+        val isFull = team.isFull
         val count = players.count()
-        val max = team.maxPlayers.coerceAtLeast(players.count())
 
-        val isFull = players.isNotEmpty() && count >= max
         return if (players.isEmpty()) {
             arrayOf(
                 text("None", GRAY, TextDecoration.ITALIC), empty(),

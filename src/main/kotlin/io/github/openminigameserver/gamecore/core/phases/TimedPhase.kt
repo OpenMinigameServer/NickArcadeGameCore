@@ -30,5 +30,5 @@ abstract class TimedPhase(name: String, friendlyName: String, val duration: Dura
         return hasPassedNow()
     }
 
-    private fun hasPassedNow() = elapsedTime > duration
+    private fun hasPassedNow() = elapsedTime >= duration
 }
