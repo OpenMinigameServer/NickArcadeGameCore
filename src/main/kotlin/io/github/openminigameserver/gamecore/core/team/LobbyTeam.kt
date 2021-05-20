@@ -31,7 +31,7 @@ class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AI
                         lore(
                             listOf(
                                 Component.text(
-                                    if (game.isRolePlayGame) "Click to select player teams!" else "Click to select your team!",
+                                    if (game.isRolePlayGame) "Click to select player roles!" else "Click to select your team!",
                                     GRAY
                                 ).disableItalic()
                             )

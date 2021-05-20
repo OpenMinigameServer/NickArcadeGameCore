@@ -82,7 +82,7 @@ object InfoCommands {
     }
 
 
-    @CommandMethod("game <game> admin phase skip")
+    @CommandMethod("game <game> phase skip")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameSkipCurrentPhase(
         sender: ArcadePlayer,
@@ -94,7 +94,7 @@ object InfoCommands {
         currentGame.phasesTimer.skipCurrent = true
     }
 
-    @CommandMethod("game <game> admin phase setElapsed <time>")
+    @CommandMethod("game <game> phase setElapsed <time>")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDurationSetElapsed(
         sender: ArcadePlayer,
@@ -115,7 +115,7 @@ object InfoCommands {
         currentPhase.elapsedTime = finalTime
     }
 
-    @CommandMethod("game <game> admin phase setRemaining <time>")
+    @CommandMethod("game <game> phase setRemaining <time>")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDurationSetRemaining(
         sender: ArcadePlayer,
@@ -137,7 +137,7 @@ object InfoCommands {
         currentPhase.elapsedTime = finalTime
     }
 
-    @CommandMethod("game <game> admin dispose")
+    @CommandMethod("game <game> dispose")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDispose(
         sender: ArcadePlayer,
@@ -146,9 +146,7 @@ object InfoCommands {
         currentGame.close()
     }
 
-
-
-    @CommandMethod("game <game> admin forceStart")
+    @CommandMethod("game <game> forceStart")
     @RequiredRank(HypixelPackageRank.ADMIN)
     fun gameDurationSetElapsed(
         sender: ArcadePlayer,
