@@ -2,6 +2,7 @@ package io.github.openminigameserver.gamecore.core.team.roles
 
 import io.github.openminigameserver.gamecore.core.players.currentTeam
 import io.github.openminigameserver.gamecore.core.team.ColoredGameModeTeam
+import io.github.openminigameserver.gamecore.core.team.SpectatorTeam
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -25,8 +26,8 @@ class RoleTeam(
 ) {
 
     override fun configureScoreboardTeam(team: Team, target: ArcadePlayer, viewer: ArcadePlayer) {
-        //Only see players with same role or if role is allowed to see other player roles
-        if (target.currentTeam == viewer.currentTeam || displayConfiguration.displayOtherRoles) {
+        //Only see players with same role, if role is allowed to see other player roles or if the viewer is a spectator
+        if (viewer.currentTeam is SpectatorTeam || target.currentTeam == viewer.currentTeam || displayConfiguration.displayOtherRoles) {
             super.configureScoreboardTeam(team, target, viewer)
             return
         }

@@ -20,6 +20,7 @@ import io.github.openminigameserver.gamecore.core.players.currentGame
 import io.github.openminigameserver.gamecore.core.team.GameTeam
 import io.github.openminigameserver.gamecore.core.team.LobbyTeam
 import io.github.openminigameserver.gamecore.core.team.SpectatorTeam
+import io.github.openminigameserver.gamecore.utils.DebugComponent
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
 import io.github.openminigameserver.nickarcade.core.manager.getArcadeSender
 import io.github.openminigameserver.nickarcade.display.managers.ScoreboardManager
@@ -27,6 +28,7 @@ import io.github.openminigameserver.nickarcade.plugin.extensions.async
 import io.github.openminigameserver.nickarcade.plugin.extensions.launch
 import io.github.openminigameserver.nickarcade.plugin.extensions.sync
 import io.github.openminigameserver.nickarcade.plugin.extensions.worldBoundEvent
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -146,7 +148,7 @@ data class GameInstance(
         phasesTimer.stop()
         GameInstanceManager.unregisterGame(this)
         allTeams.forEach {
-            it.players.asSequence().forEach { p ->
+            it.playerSet.toList().forEach { p ->
                 p.player?.teleport(Bukkit.getWorlds().first().spawnLocation)
                 it.removePlayer(p)
                 p.currentGame = null
@@ -168,4 +170,8 @@ data class GameInstance(
     fun isHostPartyLeader(player: ArcadePlayer) = hostParty?.isLeader(player) ?: false
 
     val isRolePlayGame get() = mode is RoleGameModeDefinition
+
+    fun debug(text: Component) {
+        audience.sendMessage(DebugComponent(text))
+    }
 }

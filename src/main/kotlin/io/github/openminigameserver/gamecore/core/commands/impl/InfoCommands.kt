@@ -8,9 +8,11 @@ import io.github.openminigameserver.gamecore.core.game.GameInstance
 import io.github.openminigameserver.gamecore.core.game.hosting.GameHostingMode
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.AdminHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PartyHostingInfo
+import io.github.openminigameserver.gamecore.core.game.hosting.impl.PublicBedrockGameHostingInfo
 import io.github.openminigameserver.gamecore.core.game.hosting.impl.PublicGameHostingInfo
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.core.phases.TimedPhase
+import io.github.openminigameserver.gamecore.core.phases.impl.LobbyPhase
 import io.github.openminigameserver.gamecore.utils.InfoComponent
 import io.github.openminigameserver.hypixelapi.models.HypixelPackageRank
 import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePlayer
@@ -39,6 +41,7 @@ object InfoCommands {
             GameHostingMode.PUBLIC -> PublicGameHostingInfo
             GameHostingMode.PRIVATE_PARTY -> PartyHostingInfo(sender.getOrCreateParty().id)
             GameHostingMode.PRIVATE_ADMIN -> AdminHostingInfo(sender)
+            GameHostingMode.PUBLIC_BEDROCK -> PublicBedrockGameHostingInfo
         }
 
         val party = sender.getCurrentParty(false)
@@ -141,5 +144,26 @@ object InfoCommands {
         @Argument("game") game: GameDefinition
     ) = gameCommand(sender, game) { currentGame ->
         currentGame.close()
+    }
+
+
+
+    @CommandMethod("game <game> admin forceStart")
+    @RequiredRank(HypixelPackageRank.ADMIN)
+    fun gameDurationSetElapsed(
+        sender: ArcadePlayer,
+        @Argument("game") game: GameDefinition,
+    ) = gameCommand(sender, game) { currentGame ->
+        val currentPhase = currentGame.currentPhase
+        if (currentPhase !is LobbyPhase) {
+            sender.audience.sendMessage(
+                text("Unable to force a game start when the game is already running.", RED)
+            )
+            return@gameCommand
+        }
+        currentPhase.forceStart = true
+        sender.audience.sendMessage(
+            text("Successfully forced the game to start.", GREEN)
+        )
     }
 }

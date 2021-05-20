@@ -14,6 +14,8 @@ const val lobbyWaitingTime = 15
 
 class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", lobbyWaitingTime.seconds) {
 
+    var forceStart: Boolean = false
+
     init {
         disablePlayerDamage()
         disablePlayerHunger()
@@ -32,7 +34,7 @@ class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", lobbyWaitingTime.seconds) {
     override suspend fun shouldResetTimer(): Boolean {
         val playerCount = game.playerCount
 
-        return !game.isDeveloperGame && (playerCount < game.mode.minimumPlayersToStart || playerCount == 0)
+        return !forceStart && !game.isDeveloperGame && (playerCount < game.mode.minimumPlayersToStart || playerCount == 0)
     }
 
     override suspend fun onTick() {

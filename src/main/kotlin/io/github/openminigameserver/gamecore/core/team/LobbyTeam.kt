@@ -9,6 +9,7 @@ import io.github.openminigameserver.nickarcade.core.misc.RightClickSuffixCompone
 import io.github.openminigameserver.nickarcade.core.ui.disableItalic
 import io.github.openminigameserver.nickarcade.party.model.getCurrentParty
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.*
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -65,6 +66,7 @@ class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AI
             if (team != null) players.forEach {
                 it.currentTeam = team
                 playersWithoutTeam.remove(it)
+                game.debug(text("Assigning ${it.actualDisplayName} to team ${team.friendlyName}"))
             }
         }
 
@@ -78,6 +80,7 @@ class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AI
                         val player = finalPlayersWithoutTeam.randomOrNull() ?: return@teamsForEach
                         finalPlayersWithoutTeam.remove(player)
                         player.currentTeam = team
+                        game.debug(text("Assigning ${player.actualDisplayName} to team ${team.friendlyName}"))
                     }
                 }
             } else {
@@ -87,6 +90,8 @@ class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AI
                     //pick a random team for each member
                     party.membersList.shuffled().forEach { partyMember ->
                         partyMember.player.currentTeam = game.teams.firstOrNull { !it.isFull } ?: game.spectatorTeam
+
+                        game.debug(text("Assigning ${partyMember.player.actualDisplayName} to team ${partyMember.player.currentTeam!!.friendlyName}"))
                     }
                 } else {
                     //If the party will not fill the entire game,

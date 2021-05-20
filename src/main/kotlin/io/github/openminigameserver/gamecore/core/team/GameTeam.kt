@@ -24,7 +24,7 @@ abstract class GameTeam(
 
     lateinit var game: GameInstance
 
-    private val playerSet: MutableSet<ArcadePlayer> = mutableSetOf()
+    internal val playerSet: MutableSet<ArcadePlayer> = mutableSetOf()
     val players: Set<ArcadePlayer> = Collections.unmodifiableSet(playerSet)
 
     fun addPlayer(p: ArcadePlayer) {
@@ -34,7 +34,7 @@ abstract class GameTeam(
     }
 
     fun removePlayer(p: ArcadePlayer) {
-        if (playerSet.remove(p)) {
+        if (playerSet.removeIf { it.uuid == p.uuid }) {
             onPlayerRemove(p)
         }
     }
