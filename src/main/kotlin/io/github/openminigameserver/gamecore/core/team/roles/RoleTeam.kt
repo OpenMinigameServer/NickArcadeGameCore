@@ -33,7 +33,7 @@ class RoleTeam(
         }
 
         team.apply {
-            color(NamedTextColor.RED)
+            color(if (displayConfiguration.isOtherRolesFriendly) NamedTextColor.GREEN else NamedTextColor.RED)
             prefix(null)
             suffix(null)
         }
