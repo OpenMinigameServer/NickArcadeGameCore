@@ -21,7 +21,7 @@ class RoleTeam(
     suffix: Component?
 ) : ColoredGameModeTeam(
     name, friendlyName,
-    gameMode, Material.AIR, maxPlayers,
+    gameMode, Material.PAPER, maxPlayers,
     color, prefix, suffix
 ) {
 
