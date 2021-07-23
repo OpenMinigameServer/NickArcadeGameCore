@@ -21,7 +21,7 @@ class GameModeParser<C> : ArgumentParser<C, GameModeDefinition> {
 
         val game = this.game ?: commandContext.asMap().values.firstOrNull { it is GameDefinition } as? GameDefinition
         if (game != null) {
-            val entry = game.gameModes[input.toUpperCase()]
+            val entry = game.gameModes[input.uppercase(Locale.getDefault())]
             if (entry != null) {
                 inputQueue.poll()
                 return ArgumentParseResult.success(entry)
@@ -37,7 +37,7 @@ class GameModeParser<C> : ArgumentParser<C, GameModeDefinition> {
     override fun suggestions(commandContext: CommandContext<C>, input: String): List<String> {
         val game = this.game ?: commandContext.currentArgument?.owningCommand?.commandMeta?.get(gameCommandKey)?.orElse(null) ?: commandContext.asMap().values.firstOrNull { it is GameDefinition } as? GameDefinition
         if (game != null) {
-            return game.gameModes.keys.map { it.toLowerCase() }
+            return game.gameModes.keys.map { it.lowercase(Locale.getDefault()) }
         }
         return super.suggestions(commandContext, input)
     }

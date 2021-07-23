@@ -16,6 +16,8 @@ import org.bukkit.ChatColor
 import org.bukkit.scoreboard.Team
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.time.DurationUnit
 
 object InGameScoreboardDataProvider : ScoreboardDataProvider {
     override suspend fun providePrefix(target: ArcadePlayer, viewer: ArcadePlayer): Component? {
@@ -53,14 +55,17 @@ object InGameScoreboardDataProvider : ScoreboardDataProvider {
             if (currentPhase.shouldResetTimer()) {
                 lines.add(text("Waiting..."))
             } else {
-                lines.add(text("Starting in ").append(text("${currentPhase.remainingTime.inSeconds.toInt()}s", GREEN)))
+                lines.add(text("Starting in ").append(text(
+                    "${
+                        currentPhase.remainingTime.toDouble(DurationUnit.SECONDS).toInt()
+                    }s", GREEN)))
             }
         }
         lines.add(empty())
         lines.add(text("Mode: ").append(text(game.mode.friendlyName, GREEN)))
 
         return SidebarData(
-            text(game.game.friendlyName.toUpperCase(), NamedTextColor.YELLOW, TextDecoration.BOLD),
+            text(game.game.friendlyName.uppercase(Locale.getDefault()), NamedTextColor.YELLOW, TextDecoration.BOLD),
             lines
         )
     }

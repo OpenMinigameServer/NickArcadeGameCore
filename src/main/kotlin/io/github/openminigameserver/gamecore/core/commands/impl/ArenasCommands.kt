@@ -23,6 +23,7 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor.*
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 object ArenasCommands {
@@ -74,9 +75,9 @@ object ArenasCommands {
                     it.append(newline()).append(
                         text(arena.name, if (arena.isValid) GREEN else RED).clickEvent(
                             ClickEvent.runCommand(
-                                "/$arenasCommandPrefix info ${mode.name.toLowerCase()} ${arena.name}".replace(
+                                "/$arenasCommandPrefix info ${mode.name.lowercase(Locale.getDefault())} ${arena.name}".replace(
                                     "<game>",
-                                    game.name.toLowerCase()
+                                    game.name.lowercase(Locale.getDefault())
                                 )
                             )
                         )

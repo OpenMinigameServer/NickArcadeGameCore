@@ -21,6 +21,7 @@ import io.github.openminigameserver.nickarcade.core.commandManager
 import io.github.openminigameserver.nickarcade.core.data.sender.ArcadeSender
 import io.leangen.geantyref.TypeToken
 import org.checkerframework.checker.nullness.qual.NonNull
+import java.util.*
 
 object GameCommandManager {
     val gameCommandKey = CommandMeta.Key.of(GameDefinition::class.java, "game")
@@ -53,7 +54,7 @@ object GameCommandManager {
             val gameParser = GameModeParser<ArcadeSender>().apply { this.game = game }
             DynamicPropertyCommandsHelper.registerDynamicPropertyCommands(game)
             gameCommands.forEach { cmd ->
-                val command = commandManager.commandBuilder(game.name.toLowerCase()) {
+                val command = commandManager.commandBuilder(game.name.lowercase(Locale.getDefault())) {
                     val arguments = cmd.arguments
                     // Drop "game" and "<game>"
                     arguments.drop(2).forEachIndexed { i, it ->

@@ -1,7 +1,6 @@
 package io.github.openminigameserver.gamecore.core.phases
 
 import kotlin.time.Duration
-import kotlin.time.seconds
 
 abstract class TimedPhase(name: String, friendlyName: String, val duration: Duration) : GamePhase(name, friendlyName) {
     var elapsedTime: Duration = Duration.ZERO
@@ -22,7 +21,7 @@ abstract class TimedPhase(name: String, friendlyName: String, val duration: Dura
     open suspend fun shouldResetTimer(): Boolean = false
 
     override suspend fun shouldEnd(): Boolean {
-        elapsedTime += 1.seconds
+        elapsedTime += Duration.seconds(1)
         if (shouldResetTimer()) {
             resetTimer()
             return hasPassedNow()

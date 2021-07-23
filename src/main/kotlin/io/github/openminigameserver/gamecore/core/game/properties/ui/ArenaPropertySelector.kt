@@ -19,6 +19,7 @@ import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.util.*
 import kotlin.math.ceil
 
 fun getContentRows(mode: GameModeDefinition): Int {
@@ -42,7 +43,11 @@ class ArenaPropertySelector(
                 props.forEach { prop: GamePropertyDefinition<*> ->
                     this.addItem(guiItem(ItemStack(Material.PAPER).itemMeta {
                         displayName(
-                            Component.text("${type.name.toLowerCase().capitalize()} Property", NamedTextColor.GREEN)
+                            Component.text(
+                                "${
+                                    type.name.lowercase(Locale.getDefault())
+                                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                                } Property", NamedTextColor.GREEN)
                                 .disableItalic()
                         )
                         lore(

@@ -18,7 +18,7 @@ object GameManager {
 
     fun registerGame(game: GameDefinition) {
         //Just for safety
-        game.name = game.name.toUpperCase()
+        game.name = game.name.uppercase(Locale.getDefault())
 
         registeredGamesMap[game.name] = (game)
         GameCorePlugin.instance.logger.info(

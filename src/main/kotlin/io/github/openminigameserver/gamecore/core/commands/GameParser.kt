@@ -22,7 +22,7 @@ class GameParser<C> : ArgumentParser<C, GameDefinition> {
                 )
             )
 
-        val result = GameManager.registeredGames[input.toUpperCase()]
+        val result = GameManager.registeredGames[input.uppercase(Locale.getDefault())]
 
         if (result != null) {
             inputQueue.poll()
@@ -33,6 +33,6 @@ class GameParser<C> : ArgumentParser<C, GameDefinition> {
     }
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): List<String> {
-        return GameManager.registeredGames.keys.map { it.toLowerCase() }
+        return GameManager.registeredGames.keys.map { it.lowercase(Locale.getDefault()) }
     }
 }

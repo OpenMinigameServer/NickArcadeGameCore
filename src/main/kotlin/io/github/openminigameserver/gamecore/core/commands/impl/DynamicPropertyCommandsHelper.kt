@@ -4,14 +4,13 @@ import cloud.commandframework.arguments.CommandArgument
 import cloud.commandframework.kotlin.extension.commandBuilder
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.commands.ArenaDefinitionParser
-import io.github.openminigameserver.gamecore.core.commands.GameModeParser
 import io.github.openminigameserver.gamecore.core.commands.GamePropertyParser
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
-import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
 import io.github.openminigameserver.nickarcade.core.commandManager
 import io.github.openminigameserver.nickarcade.core.data.sender.ArcadeSender
 import net.kyori.adventure.text.Component
+import java.util.*
 
 object DynamicPropertyCommandsHelper {
 
@@ -28,35 +27,37 @@ object DynamicPropertyCommandsHelper {
         // /<game> admin arenas properties <mode> <arena> add <team> <name> <value>
         // /<game> admin arenas properties <mode> <arena> remove <team> <name> <value>
 
-        commandManager.commandBuilder(game.name.toLowerCase()) {
-            this.literal("admin")
-            this.literal("arenas")
-            this.literal("properties")
-            this.argument(
-                CommandArgument.ofType<ArcadeSender, GameModeDefinition>(
-                    GameModeDefinition::class.java,
-                    "mode"
-                ).withParser(GameModeParser<ArcadeSender>().also { it.game = game })
-            )
-            this.argument(
-                CommandArgument.ofType<ArcadeSender, ArenaDefinition>(
-                    ArenaDefinition::class.java,
-                    "mode"
-                ).withParser(ArenaDefinitionParser())
-            )
+        game.gameModes.values.forEach { mode ->
+            commandManager.commandBuilder(game.name.lowercase(Locale.getDefault())) {
+                this.literal("admin")
+                this.literal("arenas")
+                this.literal("properties")
+                this.literal(mode.name.lowercase(Locale.getDefault()))
+                this.argument(
+                    CommandArgument.ofType<ArcadeSender, ArenaDefinition>(
+                        ArenaDefinition::class.java,
+                        "mode"
+                    ).withParser(ArenaDefinitionParser(mode))
+                )
 
-            registerCopy {
-                literal("set")
-                argument(CommandArgument.ofType<ArcadeSender?, GamePropertyDefinition<*>?>(GamePropertyDefinition::class.java, "name").withParser(
-                    GamePropertyParser()
-                ))
+                registerCopy {
+                    literal("set")
+                    argument(
+                        CommandArgument.ofType<ArcadeSender?, GamePropertyDefinition<*>>(
+                            GamePropertyDefinition::class.java,
+                            "name"
+                        ).withParser(
+                            GamePropertyParser(mode)
+                        )
+                    )
 
-                handler {
-                    it.sender.audience.sendMessage(Component.text("bruh"))
+                    handler {
+                        it.sender.audience.sendMessage(Component.text("bruh"))
+                    }
                 }
-            }
 
-        }.register()
+            }.register()
+        }
 
     }
 

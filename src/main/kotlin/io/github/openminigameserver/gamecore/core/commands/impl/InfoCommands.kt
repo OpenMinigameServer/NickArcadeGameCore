@@ -23,7 +23,7 @@ import io.github.openminigameserver.nickarcade.plugin.helper.commands.RequiredRa
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.*
-import kotlin.time.seconds
+import kotlin.time.Duration
 
 object InfoCommands {
 
@@ -108,7 +108,7 @@ object InfoCommands {
             )
             return@gameCommand
         }
-        val finalTime = seconds.seconds
+        val finalTime = Duration.seconds(seconds)
         sender.audience.sendMessage(
             text("Successfully current phase's elapsed time to ", GREEN).append(text(finalTime.toString(), GOLD))
         )
@@ -129,8 +129,8 @@ object InfoCommands {
             )
             return@gameCommand
         }
-        val time = seconds.seconds
-        val finalTime = currentPhase.duration - seconds.seconds
+        val time = Duration.seconds(seconds)
+        val finalTime = currentPhase.duration - Duration.seconds(seconds)
         sender.audience.sendMessage(
             text("Successfully current phase's remaining time to ", GREEN).append(text(time.toString(), GOLD))
         )

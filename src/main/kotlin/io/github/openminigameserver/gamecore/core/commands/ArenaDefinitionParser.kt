@@ -10,7 +10,7 @@ import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class ArenaDefinitionParser<C> : ArgumentParser<C, ArenaDefinition> {
+class ArenaDefinitionParser<C>(val mode: GameModeDefinition? = null) : ArgumentParser<C, ArenaDefinition> {
 
     override fun parse(
         commandContext: CommandContext<C>,
@@ -19,7 +19,7 @@ class ArenaDefinitionParser<C> : ArgumentParser<C, ArenaDefinition> {
         val input = inputQueue.peek()
             ?: return ArgumentParseResult.failure(NoInputProvidedException(GameModeParser::class.java, commandContext))
 
-        val mode = commandContext.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition
+        val mode = mode ?: commandContext.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition
         if (mode != null) {
             val result = runBlocking { ArenaManager.findArenaForGameModeDefinitionByName(mode, input) }
             if (result != null) {
@@ -35,7 +35,7 @@ class ArenaDefinitionParser<C> : ArgumentParser<C, ArenaDefinition> {
     }
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): List<String> {
-        val mode = commandContext.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition
+        val mode = mode ?: commandContext.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition
         if (mode != null) {
             return runBlocking { ArenaManager.getArenaNamesForGameModeDefinition(mode) }
         }

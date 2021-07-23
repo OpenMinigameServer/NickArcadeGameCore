@@ -6,6 +6,7 @@ import io.github.openminigameserver.nickarcade.plugin.extensions.sync
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import kotlin.time.Duration
 import kotlin.time.seconds
 
 class PhasesTimer(val game: GameInstance) {
@@ -57,7 +58,7 @@ class PhasesTimer(val game: GameInstance) {
                     sync { startCurrentPhase() }
                     skipCurrent = false
                 }
-                delay(1.seconds)
+                delay(Duration.seconds(1))
             }
         }
     }

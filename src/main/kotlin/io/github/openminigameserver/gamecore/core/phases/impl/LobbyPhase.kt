@@ -8,11 +8,12 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.*
 import org.bukkit.NamespacedKey
-import kotlin.time.seconds
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 const val lobbyWaitingTime = 15
 
-class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", lobbyWaitingTime.seconds) {
+class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", Duration.seconds(lobbyWaitingTime)) {
 
     var forceStart: Boolean = false
 
@@ -38,7 +39,7 @@ class LobbyPhase : TimedPhase("lobbyPhase", "Lobby", lobbyWaitingTime.seconds) {
     }
 
     override suspend fun onTick() {
-        val time = remainingTime.inSeconds.toInt().coerceAtLeast(1)
+        val time = remainingTime.toDouble(DurationUnit.SECONDS).toInt().coerceAtLeast(1)
         val color = when {
             time <= 5 -> RED
             time <= 10 -> YELLOW

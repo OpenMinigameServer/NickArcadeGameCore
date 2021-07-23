@@ -13,7 +13,7 @@ open class GameDefinition(val friendlyName: String, name: String) {
 
     fun registerGameMode(gameMode: GameModeDefinition) {
         //Just for safety
-        gameMode.name = gameMode.name.toUpperCase()
+        gameMode.name = gameMode.name.uppercase(Locale.getDefault())
 
         gameMode.game = this
         modes[gameMode.name] = gameMode

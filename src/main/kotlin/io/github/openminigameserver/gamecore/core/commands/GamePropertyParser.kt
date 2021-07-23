@@ -7,19 +7,19 @@ import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
 import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
 import java.util.*
 
-class GamePropertyParser<C> : ArgumentParser<C, GamePropertyDefinition<*>> {
+class GamePropertyParser<C>(val mode: GameModeDefinition? = null) : ArgumentParser<C, GamePropertyDefinition<*>> {
     override fun parse(
         commandContext: CommandContext<C>,
         inputQueue: Queue<String>
     ): ArgumentParseResult<GamePropertyDefinition<*>> {
-        TODO("Not yet implemented")
+        return ArgumentParseResult.failure(Throwable("E"))
     }
 
-    fun getContext(ctx: CommandContext<C>) =
-        ctx.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition to null
+    private fun getContext(ctx: CommandContext<C>) =
+        mode ?: (ctx.asMap().values.firstOrNull { it is GameModeDefinition } as? GameModeDefinition)
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): List<String> {
-        val (mode) = getContext(commandContext)
+        val mode = getContext(commandContext)
         mode ?: return super.suggestions(commandContext, input)
 
         return mode.properties.values.flatten().map { it.name }
