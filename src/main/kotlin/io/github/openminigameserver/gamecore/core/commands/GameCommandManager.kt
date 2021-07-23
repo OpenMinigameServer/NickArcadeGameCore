@@ -9,11 +9,13 @@ import cloud.commandframework.kotlin.extension.commandBuilder
 import cloud.commandframework.meta.CommandMeta
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
 import io.github.openminigameserver.gamecore.core.commands.impl.ArenasCommands
+import io.github.openminigameserver.gamecore.core.commands.impl.DynamicPropertyCommandsHelper
 import io.github.openminigameserver.gamecore.core.commands.impl.InfoCommands
 import io.github.openminigameserver.gamecore.core.commands.impl.PropertyCommands
 import io.github.openminigameserver.gamecore.core.game.GameDefinition
 import io.github.openminigameserver.gamecore.core.game.GameManager
 import io.github.openminigameserver.gamecore.core.game.mode.GameModeDefinition
+import io.github.openminigameserver.gamecore.core.game.properties.GamePropertyDefinition
 import io.github.openminigameserver.nickarcade.core.commandAnnotationParser
 import io.github.openminigameserver.nickarcade.core.commandManager
 import io.github.openminigameserver.nickarcade.core.data.sender.ArcadeSender
@@ -29,6 +31,7 @@ object GameCommandManager {
             GameModeParser()
         }
         commandManager.parserRegistry.registerParserSupplier(TypeToken.get(ArenaDefinition::class.java)) { ArenaDefinitionParser() }
+        commandManager.parserRegistry.registerParserSupplier(TypeToken.get(GamePropertyDefinition::class.java)) { GamePropertyParser() }
     }
 
     private val gameCommands = listOf(
@@ -48,6 +51,7 @@ object GameCommandManager {
         GameManager.registeredGames.values.filterNot { registeredGameCommands.contains(it.name) }.forEach { game ->
             registeredGameCommands.add(game.name)
             val gameParser = GameModeParser<ArcadeSender>().apply { this.game = game }
+            DynamicPropertyCommandsHelper.registerDynamicPropertyCommands(game)
             gameCommands.forEach { cmd ->
                 val command = commandManager.commandBuilder(game.name.toLowerCase()) {
                     val arguments = cmd.arguments
