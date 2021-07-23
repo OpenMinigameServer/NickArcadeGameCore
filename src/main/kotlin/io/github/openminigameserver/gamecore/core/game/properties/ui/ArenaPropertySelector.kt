@@ -23,7 +23,7 @@ import java.util.*
 import kotlin.math.ceil
 
 fun getContentRows(mode: GameModeDefinition): Int {
-    return ceil(mode.properties.entries.sumBy { it.value.size } / 9.0).toInt()
+    return ceil(mode.properties.entries.sumOf { it.value.size } / 9.0).toInt()
 }
 
 class ArenaPropertySelector(

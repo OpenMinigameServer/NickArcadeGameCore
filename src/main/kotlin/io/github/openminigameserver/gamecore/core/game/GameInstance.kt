@@ -62,7 +62,7 @@ data class GameInstance(
         (teams + spectatorTeam + lobbyTeam).onEach { it.game = this@GameInstance }
 
     val playerCount: Int
-        get() = allTeams.filterNot { it == spectatorTeam }.sumBy { it.players.size }
+        get() = allTeams.filterNot { it == spectatorTeam }.sumOf { it.players.size }
 
     val phases =
         ArrayDeque(listOf(lobbyPhase) + mode.modePhases.map { it() } + gameEndPhase).onEach {
