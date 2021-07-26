@@ -134,11 +134,8 @@ object ArenasCommands {
                                                     arena[prop as GamePropertyDefinition<Any>, team]?.toString() ?: "<N/A>",
                                                     GOLD
                                                 )
-                                            ).append(newline())
-                                            it.append(newline())
-                                            it.append(text("Click to set this property value.", GREEN))
+                                            )
                                         })
-                                        .createTeamPropertySetClickEvent(arena, prop, team)
                                 )
                             }
                             return@forEach

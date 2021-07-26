@@ -12,5 +12,5 @@ spigot {
 }
 
 dependencies {
-    api("com.grinderwolf:slimeworldmanager-plugin:2.5.4-SNAPSHOT")
+    compileOnly("com.grinderwolf:slimeworldmanager-plugin:2.5.4-SNAPSHOT")
 }

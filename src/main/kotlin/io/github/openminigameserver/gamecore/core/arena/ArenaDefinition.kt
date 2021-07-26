@@ -71,6 +71,6 @@ data class  ArenaDefinition(
             properties.remove(name)
             return
         }
-        properties[name] = WrappedPropertyValue(value, T::class.java.name)
+        properties[name] = WrappedPropertyValue(value, value.javaClass.name)
     }
 }

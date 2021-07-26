@@ -8,6 +8,7 @@ import cloud.commandframework.keys.CloudKey
 import cloud.commandframework.kotlin.extension.commandBuilder
 import cloud.commandframework.meta.CommandMeta
 import io.github.openminigameserver.gamecore.core.arena.ArenaDefinition
+import io.github.openminigameserver.gamecore.core.arena.ArenaLocation
 import io.github.openminigameserver.gamecore.core.commands.impl.ArenasCommands
 import io.github.openminigameserver.gamecore.core.commands.impl.DynamicPropertyCommandsHelper
 import io.github.openminigameserver.gamecore.core.commands.impl.InfoCommands
@@ -31,6 +32,7 @@ object GameCommandManager {
         commandManager.parserRegistry.registerParserSupplier(TypeToken.get(GameModeDefinition::class.java)) {
             GameModeParser()
         }
+        commandManager.parserRegistry.registerParserSupplier(TypeToken.get(ArenaLocation::class.java)) { ArenaLocationParser() }
         commandManager.parserRegistry.registerParserSupplier(TypeToken.get(ArenaDefinition::class.java)) { ArenaDefinitionParser() }
         commandManager.parserRegistry.registerParserSupplier(TypeToken.get(GamePropertyDefinition::class.java)) { GamePropertyParser() }
     }

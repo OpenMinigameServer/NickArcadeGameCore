@@ -8,29 +8,31 @@ import io.github.openminigameserver.nickarcade.core.data.sender.player.ArcadePla
 import io.github.openminigameserver.nickarcade.core.misc.RightClickSuffixComponent
 import io.github.openminigameserver.nickarcade.core.ui.disableItalic
 import io.github.openminigameserver.nickarcade.party.model.getCurrentParty
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.*
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AIR, Int.MAX_VALUE) {
     override fun onPlayerAdd(p: ArcadePlayer) {
         super.onPlayerAdd(p)
         val player = p.player
         if (player != null) {
+            p.player?.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 255, true, false, false))
             player.inventory.clear()
             if (game.hostingInfo.mode.isPrivate && (!game.isRolePlayGame || game.isHostPartyLeader(p))) {
                 player.inventory.setItem(0, ItemStack(Material.NOTE_BLOCK).apply {
                     itemMeta = itemMeta.apply {
                         displayName(
-                            RightClickSuffixComponent(Component.text("Team Selector", GREEN)).asComponent()
+                            RightClickSuffixComponent(text("Team Selector", GREEN)).asComponent()
                                 .disableItalic()
                         )
                         lore(
                             listOf(
-                                Component.text(
+                                text(
                                     if (game.isRolePlayGame) "Click to select player roles!" else "Click to select your team!",
                                     GRAY
                                 ).disableItalic()
@@ -54,6 +56,7 @@ class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AI
     }
 
     override fun onPlayerRemove(p: ArcadePlayer) {
+        p.player?.removePotionEffect(PotionEffectType.NIGHT_VISION)
         p.player?.inventory?.clear()
         super.onPlayerRemove(p)
     }
@@ -101,7 +104,7 @@ class LobbyTeam : GameModeTeam("lobby", "Lobby", GameMode.ADVENTURE, Material.AI
                             .randomOrNull() ?: game.spectatorTeam
                     if (partyTargetTeam is SpectatorTeam) {
                         party.audience.sendMessage(
-                            Component.text(
+                            text(
                                 "We were unable to put your party in a team! You are now spectating the game.",
                                 RED
                             )
